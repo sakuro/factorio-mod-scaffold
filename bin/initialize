@@ -1,0 +1,150 @@
+#!/bin/zsh
+
+set -u
+setopt extendedglob # for (#m) and ##
+
+# MOD's internal name: Defaults to current directory
+: ${MOD_NAME:="$PWD:t"}
+# Title-ize the internal name (mod_name => Mod Name)
+: ${MOD_TITLE:=${(C)${${${MOD_NAME}//(#m)[^[:alnum:]]##/ }## }%% }}
+# Author name
+: ${AUTHOR_NAME:="$(gh api repos/:owner/:repo --jq '.owner.login')"}
+# License identifier. Defaults to MIT
+: ${MOD_LICENSE:="default_mit"}
+# MOD category
+: ${MOD_CATEGORY:="no-category"}
+# MOD tags
+: ${MOD_TAGS:=""}
+
+# Install runtimes via mise
+print "Install tools via mise ..."
+mise install
+
+# Install gems
+print "Installing gems ..."
+bundle install
+bundle binstub --force factorix rake
+
+# Replace README.md with just the MOD title
+print "Overwriting README.md ..."
+gh api repos/:owner/:repo \
+  --jq '.template_repository | "\(.full_name) \(.html_url)"' | \
+  read -r TEMPLATE_REPO TEMPLATE_REPO_URL
+cat >README.md <<README
+# ${MOD_TITLE}
+
+[![Downloads](https://img.shields.io/badge/dynamic/json.svg?label=Downloads&url=https%3A%2F%2Fmods.factorio.com%2Fapi%2Fmods%2F${MOD_NAME}&query=%24.downloads_count)](https://mods.factorio.com/mod/${MOD_NAME})
+
+Generated from [${TEMPLATE_REPO}](${TEMPLATE_REPO_URL})
+README
+
+# Generate info.json
+print "Generating info.json ..."
+read -r -d '' INFO_JSON_TEMPLATE <<'INFO_JSON_TEMPLATE'
+{
+  "name": $name,
+  "version": "0.0.1",
+  "title": $title,
+  "author": $author,
+  "description": $title,
+  "factorio_version": "2.1",
+  "dependencies": [
+    "base >= 2.1"
+  ]
+}
+INFO_JSON_TEMPLATE
+
+jq -n \
+  --arg name "${MOD_NAME}" \
+  --arg title "${MOD_TITLE}" \
+  --arg author "${AUTHOR_NAME}" \
+  "${INFO_JSON_TEMPLATE}" > info.json
+
+# Generate local/en/mod_name.cfg
+print "Generating locale/en/${MOD_NAME}.cfg ..."
+mkdir -p locale/en
+
+cat >"locale/en/${MOD_NAME}.cfg" <<LOCALE_EN_CFG
+[mod-name]
+${MOD_NAME}=${MOD_TITLE}
+
+[mod-description]
+${MOD_NAME}=${MOD_TITLE}
+LOCALE_EN_CFG
+
+# Replace LICENSE.txt
+print "Replacing LICENSE.txt ..."
+curl -sL "$(print -n "${MOD_LICENSE}" | bundle exec ruby -rfactorix -e 'puts Factorix::API::License.for(STDIN.read).url')" -o LICENSE.txt
+
+# MIT license requires some replacements
+if [[ "${MOD_LICENSE}" = "default_mit" ]]; then
+  CURRENT_DATE_UTC="$(date -u +%Y-%m-%d)"
+  CURRENT_YEAR_UTC="${CURRENT_DATE_UTC%%-*}"
+  GIT_USER_NAME="$(git config user.name)"
+  (
+    rm -f LICENSE.txt &&
+    sed \
+      -e 's/<year>/'"${CURRENT_YEAR_UTC}"'/' \
+      -e 's/<copyright holders>/'"${GIT_USER_NAME}"'/' > LICENSE.txt
+  ) < LICENSE.txt
+fi
+
+# Update variables in Rakefile
+print "Update Rakefile ..."
+(
+  rm -f Rakefile &&
+  ruby -s -rerb -e 'print ERB.new(STDIN.read).result' -- \
+     -mod_license="${MOD_LICENSE}" \
+     -mod_category="${MOD_CATEGORY}" \
+     -mod_tags="${MOD_TAGS}" > Rakefile
+) < Rakefile
+
+# Repository configuration
+print "Configuring GitHub repository settings..."
+# Enable auto-deletion of head branches after merge
+if gh api --silent --method PATCH repos/:owner/:repo -F delete_branch_on_merge=true; then
+  print -- "- Enabled automatic branch deletion after merge"
+else
+  print -- "- Could not enable automatic branch deletion (may need to be set manually)"
+fi
+# Set workflow permissions to read/write and allow PR creation
+if gh api --method PUT repos/:owner/:repo/actions/permissions/workflow \
+  -F default_workflow_permissions=write \
+  -F can_approve_pull_request_reviews=true 2>/dev/null; then
+  print -- "- Workflow permissions set to 'Read and write'"
+  print -- "- GitHub Actions allowed to create and approve pull requests"
+else
+  print -- "- Could not configure workflow permissions (may need to be set manually)"
+fi
+# Create release environment
+if gh api --silent --method PUT repos/:owner/:repo/environments/release; then
+  print -- "- Created 'release' environment"
+else
+  print -- "- Could not create 'release' environment (may need to be created manually)"
+fi
+# Set FACTORIO_API_KEY secret for release environment
+print "** FACTORIO_API_KEY is used to publish MODs to the Factorio MOD portal. **"
+print "** Get your API key at https://www.factorio.com/profile **"
+print "** (Leave empty to skip and set it manually later) **"
+read -rs "FACTORIO_API_KEY?Enter FACTORIO_API_KEY: "
+print
+if [[ -n "${FACTORIO_API_KEY}" ]]; then
+  if gh secret set FACTORIO_API_KEY --env release --body "${FACTORIO_API_KEY}"; then
+    print -- "- Set FACTORIO_API_KEY secret for 'release' environment"
+  else
+    print -- "- Could not set FACTORIO_API_KEY secret (may need to be set manually)"
+  fi
+else
+  print -- "- Skipped FACTORIO_API_KEY (empty input, set it manually later)"
+fi
+
+# Finalize initialization
+print "Finalizing MOD initialization ..."
+git rm bin/initialize
+git add .
+
+name_with_owner="$(gh repo view --json nameWithOwner -q .nameWithOwner)"
+template_name_with_owner="$(gh api repos/:owner/:repo --jq '.template_repository.full_name')"
+git commit --amend -m ":tada: Initialized ${name_with_owner} from ${template_name_with_owner}"
+
+print "Prepared repository for ${MOD_NAME}"
