@@ -20,18 +20,6 @@ This project serves as a scaffold for creating Factorio MODs.
 3. Run `mise trust`
 
 4. Run `./bin/initialize`
-   - The following environment variables can be set to customize initialization:
-
-     | Variable | Default | Description |
-     |---|---|---|
-     | `MOD_NAME` | Current directory name | MOD's internal name |
-     | `MOD_TITLE` | Title-cased `MOD_NAME` | MOD's display title |
-     | `AUTHOR_NAME` | GitHub repository owner | Author name for info.json |
-     | `MOD_LICENSE` | `default_mit` | [License identifier](https://wiki.factorio.com/Mod_details_API#License) |
-     | `MOD_CATEGORY` | `no-category` | [MOD category](https://wiki.factorio.com/Mod_details_API#Category) |
-     | `MOD_TAGS` | *(empty)* | [MOD tags](https://wiki.factorio.com/Mod_details_API#Tags) (comma-separated) |
-
-   - Example: `MOD_LICENSE=default_gnulgplv3 ./bin/initialize`
 
    The script performs the following:
 
@@ -42,5 +30,9 @@ This project serves as a scaffold for creating Factorio MODs.
    5. Write release settings (`MOD_LICENSE`, `MOD_CATEGORY`, `MOD_TAGS`) into `mise.toml`
    6. Configure GitHub repository settings (auto-delete merged branches, workflow permissions, `release` environment, `FACTORIO_API_KEY` secret)
    7. Remove `bin/initialize` itself and amend the initial commit
+
+   - `MOD_LICENSE` can be set to customize the license (defaults to `default_mit`); see [License identifier](https://wiki.factorio.com/Mod_details_API#License)
+   - Example: `MOD_LICENSE=default_gnulgplv3 ./bin/initialize`
+   - MOD name, title, and author are derived from the current directory name and the GitHub repository owner; edit `info.json` and `locale/en/<MOD_NAME>.cfg` afterward if they need to be different. MOD category and tags are written to `mise.toml` with their default values (`no-category` and empty, respectively) and can be edited there.
 
 5. Your MOD scaffold will be ready

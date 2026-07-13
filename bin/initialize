@@ -3,18 +3,14 @@
 set -u
 setopt extendedglob # for (#m) and ##
 
-# MOD's internal name: Defaults to current directory
-: ${MOD_NAME:="$PWD:t"}
+# MOD's internal name: current directory (rename afterward if needed)
+MOD_NAME="$PWD:t"
 # Title-ize the internal name (mod_name => Mod Name)
-: ${MOD_TITLE:=${(C)${${${MOD_NAME}//(#m)[^[:alnum:]]##/ }## }%% }}
-# Author name
-: ${AUTHOR_NAME:="$(gh api repos/:owner/:repo --jq '.owner.login')"}
+MOD_TITLE=${(C)${${${MOD_NAME}//(#m)[^[:alnum:]]##/ }## }%% }
+# Author name: GitHub repository owner (edit info.json afterward if needed)
+AUTHOR_NAME="$(gh api repos/:owner/:repo --jq '.owner.login')"
 # License identifier. Defaults to MIT
 : ${MOD_LICENSE:="default_mit"}
-# MOD category
-: ${MOD_CATEGORY:="no-category"}
-# MOD tags
-: ${MOD_TAGS:=""}
 
 # Install runtimes via mise
 print "Install tools via mise ..."
@@ -88,8 +84,8 @@ fi
 print "Configuring release settings in mise.toml ..."
 cat >>mise.toml <<MISE_ENV
 MOD_LICENSE = "${MOD_LICENSE}"
-MOD_CATEGORY = "${MOD_CATEGORY}"
-MOD_TAGS = "${MOD_TAGS}"
+MOD_CATEGORY = "no-category"
+MOD_TAGS = ""
 MISE_ENV
 
 # Repository configuration
