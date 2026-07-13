@@ -20,11 +20,6 @@ setopt extendedglob # for (#m) and ##
 print "Install tools via mise ..."
 mise install
 
-# Install gems
-print "Installing gems ..."
-bundle install
-bundle binstub --force factorix rake
-
 # Replace README.md with just the MOD title
 print "Overwriting README.md ..."
 gh api repos/:owner/:repo \
@@ -74,7 +69,7 @@ LOCALE_EN_CFG
 
 # Replace LICENSE.txt
 print "Replacing LICENSE.txt ..."
-curl -sL "$(print -n "${MOD_LICENSE}" | bundle exec ruby -rfactorix -e 'puts Factorix::API::License.for(STDIN.read).url')" -o LICENSE.txt
+curl -sL "$(factorix mod license show "${MOD_LICENSE}" --json | jq -r .url)" -o LICENSE.txt
 
 # MIT license requires some replacements
 if [[ "${MOD_LICENSE}" = "default_mit" ]]; then
@@ -89,15 +84,13 @@ if [[ "${MOD_LICENSE}" = "default_mit" ]]; then
   ) < LICENSE.txt
 fi
 
-# Update variables in Rakefile
-print "Update Rakefile ..."
-(
-  rm -f Rakefile &&
-  ruby -s -rerb -e 'print ERB.new(STDIN.read).result' -- \
-     -mod_license="${MOD_LICENSE}" \
-     -mod_category="${MOD_CATEGORY}" \
-     -mod_tags="${MOD_TAGS}" > Rakefile
-) < Rakefile
+# Configure release settings in mise.toml
+print "Configuring release settings in mise.toml ..."
+cat >>mise.toml <<MISE_ENV
+MOD_LICENSE = "${MOD_LICENSE}"
+MOD_CATEGORY = "${MOD_CATEGORY}"
+MOD_TAGS = "${MOD_TAGS}"
+MISE_ENV
 
 # Repository configuration
 print "Configuring GitHub repository settings..."

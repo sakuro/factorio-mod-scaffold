@@ -50,20 +50,18 @@ jobs:
     - name: Set git user
       uses: git-actions/set-user@v1
 
-    - name: Setup Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        bundler-cache: true
+    - name: Setup mise
+      uses: jdx/mise-action@v4
 
     - name: Build and upload MOD to Factorio MOD portal
       env:
         FACTORIO_API_KEY: ${{ secrets.FACTORIO_API_KEY }}
-      run: bundle exec rake release:portal
+      run: mise run release:portal
 
     - name: Create GitHub Release
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: bundle exec rake release:github
+      run: mise run release:github
 
     - name: Checkout main branch
       run: git checkout main
@@ -74,7 +72,7 @@ jobs:
         mv changelog.txt.tmp changelog.txt
 
     - name: Verify changelog.txt format
-      run: bundle exec factorix mod changelog check
+      run: factorix mod changelog check
 
     - name: Commit and push changelog update
       run: |

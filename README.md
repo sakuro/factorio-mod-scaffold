@@ -35,11 +35,11 @@ This project serves as a scaffold for creating Factorio MODs.
 
    The script performs the following:
 
-   1. Install tools and dependencies (`mise install`, `bundle install`)
+   1. Install tools via `mise install`
    2. Generate MOD files (`info.json`, `locale/en/<MOD_NAME>.cfg`)
    3. Replace `README.md` with the MOD title and template repository link
    4. Download and set up `LICENSE.txt` based on the specified license
-   5. Expand ERB templates in `Rakefile` with release settings
+   5. Write release settings (`MOD_LICENSE`, `MOD_CATEGORY`, `MOD_TAGS`) into `mise.toml`
    6. Configure GitHub repository settings (auto-delete merged branches, workflow permissions, `release` environment, `FACTORIO_API_KEY` secret)
    7. Remove `bin/initialize` itself and amend the initial commit
 

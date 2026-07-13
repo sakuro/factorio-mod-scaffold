@@ -1,10 +1,83 @@
 [tools]
-ruby = "4.0"
 gh = "latest"
 jq = "latest"
+"github:sakuro/factorix" = "0.21.0"
 
 [settings]
 minimum_release_age = "3d"
+
+[tasks.build]
+description = "Build MOD archive"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+mod_name=$(jq -r .name info.json)
+mod_version=$(jq -r .version info.json)
+mkdir -p dist
+archive="dist/${mod_name}_${mod_version}.zip"
+rm -f "$archive"
+git archive --prefix "${mod_name}_${mod_version}/" HEAD -o "$archive"
+'''
+
+[tasks.install]
+description = "Install MOD locally"
+depends = ["build"]
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+mod_name=$(jq -r .name info.json)
+mod_version=$(jq -r .version info.json)
+archive="dist/${mod_name}_${mod_version}.zip"
+mod_dir=$(factorix path --json | jq -r .mod_dir)
+cp "$archive" "$mod_dir"
+'''
+
+[tasks.clean]
+description = "Remove build artifacts"
+run = "rm -rf dist"
+
+[tasks."release:portal"]
+description = "Publish MOD to Factorio MOD Portal"
+depends = ["build"]
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+if [ -z "${GITHUB_ACTIONS:-}" ]; then
+  echo "release:portal task must be run from GitHub Actions" >&2
+  exit 1
+fi
+mod_name=$(jq -r .name info.json)
+mod_version=$(jq -r .version info.json)
+archive="dist/${mod_name}_${mod_version}.zip"
+source_url=$(git remote get-url origin)
+factorix mod upload "$archive" \
+  --category "$MOD_CATEGORY" \
+  --license "$MOD_LICENSE" \
+  --source-url "$source_url" \
+  --description "$(cat README.md)"
+factorix mod edit "$mod_name" \
+  --summary "$(jq -r .description info.json)" \
+  --tags "$MOD_TAGS"
+'''
+
+[tasks."release:github"]
+description = "Create GitHub Release"
+depends = ["build"]
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+if [ -z "${GITHUB_ACTIONS:-}" ]; then
+  echo "release:github task must be run from GitHub Actions" >&2
+  exit 1
+fi
+mod_name=$(jq -r .name info.json)
+mod_version=$(jq -r .version info.json)
+archive="dist/${mod_name}_${mod_version}.zip"
+tag="v${mod_version}"
+notes=$(factorix mod changelog extract --version "$mod_version" --json | \
+  jq -r '.entries | to_entries | map("### \(.key)\n" + (.value | map("- " + .) | join("\n"))) | join("\n\n")')
+gh release create "$tag" --title "${mod_name} ${tag}" --notes "$notes" "$archive"
+'''
 
 [env]
 _.path = ["bin"]
