@@ -1,6 +1,6 @@
 [tools]
-gh = "latest"
-jq = "latest"
+gh = "2.96.0"
+jq = "1.8.2"
 "github:sakuro/factorix" = "0.21.0"
 
 [settings]
