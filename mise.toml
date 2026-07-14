@@ -28,6 +28,3 @@ run = "scripts/release-portal.sh"
 description = "Create GitHub Release"
 depends = ["build"]
 run = "scripts/release-github.sh"
-
-[env]
-_.path = ["bin"]

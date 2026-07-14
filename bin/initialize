@@ -83,6 +83,8 @@ fi
 # Configure release settings in mise.toml
 print "Configuring release settings in mise.toml ..."
 cat >>mise.toml <<MISE_ENV
+
+[env]
 MOD_LICENSE = "${MOD_LICENSE}"
 MOD_CATEGORY = "no-category"
 MOD_TAGS = ""
