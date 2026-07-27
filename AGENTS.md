@@ -8,6 +8,10 @@ Factorio MOD.
 
 - `mise run install` - Install to local Factorio MOD directory. Uses `git archive` internally, so only committed files are included — commit changes before running.
 
+## Temporary files
+
+Use the `tmp/` directory for temporary files. Create it if it doesn't exist. It is gitignored.
+
 ## Release
 
 Releases are handled by GitHub Actions workflows. Do not run `mise run release:*` tasks manually.
