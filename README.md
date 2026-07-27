@@ -6,6 +6,7 @@ This project serves as a scaffold for creating Factorio MODs.
 
 - [zsh](https://www.zsh.org/)
 - [mise](https://mise.jdx.dev/)
+- A configured Git identity (`git config user.name` and `user.email`) — used for the initial commit's authorship and, when `MOD_LICENSE=default_mit`, embedded as the `LICENSE.txt` copyright holder
 - A Factorio Mod Portal API key with the [`ModPortal: Publish Mods`](https://wiki.factorio.com/Mod_publish_API), [`ModPortal: Upload Mods`](https://wiki.factorio.com/Mod_upload_API), and [`ModPortal: Edit Mods`](https://wiki.factorio.com/Mod_details_API) usages, created at https://factorio.com/profile — `./bin/initialize` will prompt for this to set the `FACTORIO_API_KEY` secret
 
 ## Usage
