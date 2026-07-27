@@ -38,3 +38,4 @@ Before the first release, remove the scaffold's commented-out placeholder code f
 
 - [Factorio API](https://lua-api.factorio.com/latest/)
 - [Factorio Wiki](https://wiki.factorio.com/)
+- [factorio-data](https://github.com/wube/factorio-data) — base game's data definitions; clone locally if needed
