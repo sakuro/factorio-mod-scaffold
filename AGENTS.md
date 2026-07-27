@@ -17,7 +17,7 @@ Changelog is managed by `factorix mod changelog` and follows Factorio's changelo
 ### What to write in changelog.txt
 
 - Regular releases: limit entries to user-visible changes only.
-- Initial release: write "Initial release" only.
+- Initial release: write "Initial release" only, under the `Features` category.
 
 ### Updating the changelog during development
 
