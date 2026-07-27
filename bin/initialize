@@ -7,14 +7,15 @@ setopt extendedglob # for (#m) and ##
 MOD_NAME="$PWD:t"
 # Title-ize the internal name (mod_name => Mod Name)
 MOD_TITLE=${(C)${${${MOD_NAME}//(#m)[^[:alnum:]]##/ }## }%% }
-# Author name: GitHub repository owner (edit info.json afterward if needed)
-AUTHOR_NAME="$(gh api repos/:owner/:repo --jq '.owner.login')"
 # License identifier. Defaults to MIT
 : ${MOD_LICENSE:="default_mit"}
 
 # Install runtimes via mise
 print "Install tools via mise ..."
 mise install
+
+# Author name: GitHub repository owner (edit info.json afterward if needed)
+AUTHOR_NAME="$(gh api repos/:owner/:repo --jq '.owner.login')"
 
 # Replace README.md with just the MOD title
 print "Overwriting README.md ..."
