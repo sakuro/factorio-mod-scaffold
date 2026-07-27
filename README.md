@@ -24,7 +24,7 @@ This project serves as a scaffold for creating Factorio MODs.
    The script performs the following:
 
    1. Install tools via `mise install`
-   2. Generate MOD files (`info.json`, `locale/en/<MOD_NAME>.cfg`)
+   2. Generate MOD files (`info.json`, `locale/en/<MOD_NAME>.cfg`, `changelog.txt`)
    3. Replace `README.md` with the MOD title and template repository link
    4. Download and set up `LICENSE.txt` based on the specified license
    5. Write release settings (`MOD_LICENSE`, `MOD_CATEGORY`, `MOD_TAGS`) into `mise.toml`

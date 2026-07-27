@@ -63,6 +63,13 @@ ${MOD_NAME}=${MOD_TITLE}
 ${MOD_NAME}=${MOD_TITLE}
 LOCALE_EN_CFG
 
+# Generate changelog.txt
+print "Generating changelog.txt ..."
+cat >changelog.txt <<'CHANGELOG_TXT'
+---------------------------------------------------------------------------------------------------
+Version: Unreleased
+CHANGELOG_TXT
+
 # Replace LICENSE.txt
 print "Replacing LICENSE.txt ..."
 curl -sL "$(factorix mod license show "${MOD_LICENSE}" --json | jq -r .url)" -o LICENSE.txt
