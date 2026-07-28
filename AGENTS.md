@@ -29,10 +29,6 @@ Write entries in the Unreleased section at the top of the file. If no Unreleased
 
 Do not create a section for the next release version directly — version bumping is handled by the GitHub Actions release workflow.
 
-### Pre-release cleanup
-
-Before the first release, remove the scaffold's commented-out placeholder code from `settings.lua`, `data.lua`, and `control.lua`. If a file ends up empty, delete it.
-
 # Document Map
 
 - README.md: Project overview
