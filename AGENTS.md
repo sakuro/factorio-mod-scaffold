@@ -46,3 +46,4 @@ Do not create a section for the next release version directly — version bumpin
 - [Factorio API](https://lua-api.factorio.com/latest/)
 - [Factorio Wiki](https://wiki.factorio.com/)
 - [factorio-data](https://github.com/wube/factorio-data) — base game's data definitions; clone locally if needed
+- Game directories (mod dir, user dir, data dir, etc.): `factorix path --json | jq -r .<field>` (e.g. `.mod_dir`)
