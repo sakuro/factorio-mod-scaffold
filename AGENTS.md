@@ -4,6 +4,10 @@ Factorio MOD.
 
 # Development
 
+## Available tasks
+
+Run `mise tasks ls -l` to list tasks defined in this project. The `-l` (`--local`) flag excludes tasks inherited from mise's global config, which are unrelated to this project.
+
 ## Build and Install
 
 - `mise run install` - Install to local Factorio MOD directory. Uses `git archive` internally, so only committed files are included — commit changes before running.
