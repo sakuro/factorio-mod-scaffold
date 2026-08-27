@@ -25,5 +25,5 @@
 
 */ export-ignore=false
 .*/ export-ignore
-/scripts/ export-ignore
+/tasks/ export-ignore
 /doc/ export-ignore
