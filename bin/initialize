@@ -106,6 +106,12 @@ if gh api --silent --method PATCH repos/:owner/:repo -F delete_branch_on_merge=t
 else
   print -- "- Could not enable automatic branch deletion (may need to be set manually)"
 fi
+# Enable auto-merge for pull requests (required for Renovate's platformAutomerge)
+if gh api --silent --method PATCH repos/:owner/:repo -F allow_auto_merge=true; then
+  print -- "- Enabled auto-merge for pull requests"
+else
+  print -- "- Could not enable auto-merge (may need to be set manually)"
+fi
 # Set workflow permissions to read/write and allow PR creation
 if gh api --method PUT repos/:owner/:repo/actions/permissions/workflow \
   -F default_workflow_permissions=write \

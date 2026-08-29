@@ -30,7 +30,7 @@ This project serves as a scaffold for creating Factorio MODs.
    3. Replace `README.md` with the MOD title and template repository link
    4. Download and set up `LICENSE.txt` based on the specified license
    5. Write release settings (`MOD_LICENSE`, `MOD_CATEGORY`, `MOD_TAGS`) into `mise.toml`
-   6. Configure GitHub repository settings (auto-delete merged branches, workflow permissions, `release` environment, `FACTORIO_API_KEY` secret)
+   6. Configure GitHub repository settings (auto-delete merged branches, auto-merge, workflow permissions, `release` environment, `FACTORIO_API_KEY` secret)
    7. Remove `bin/initialize` itself and amend the initial commit
 
    - `MOD_LICENSE` can be set to customize the license (defaults to `default_mit`); see [License identifier](https://wiki.factorio.com/Mod_details_API#License)
