@@ -1,5 +1,5 @@
 [tools]
-gh = "2.96.0"
+gh = "2.98.0"
 jq = "1.8.2"
 "github:sakuro/factorix" = "0.21.0"
 
