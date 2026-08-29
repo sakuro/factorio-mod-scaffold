@@ -112,6 +112,24 @@ if gh api --silent --method PATCH repos/:owner/:repo -F allow_auto_merge=true; t
 else
   print -- "- Could not enable auto-merge (may need to be set manually)"
 fi
+# Require pull requests before merging to main (needed for auto-merge to work)
+DEFAULT_BRANCH="$(gh repo view --json defaultBranchRef -q .defaultBranchRef.name)"
+if gh api --method PUT "repos/:owner/:repo/branches/${DEFAULT_BRANCH}/protection" --input - <<'PROTECTION_JSON' >/dev/null; then
+{
+  "required_status_checks": null,
+  "enforce_admins": false,
+  "required_pull_request_reviews": {
+    "required_approving_review_count": 0
+  },
+  "restrictions": null,
+  "allow_force_pushes": false,
+  "allow_deletions": false
+}
+PROTECTION_JSON
+  print -- "- Required pull requests before merging to ${DEFAULT_BRANCH}"
+else
+  print -- "- Could not set branch protection (may need to be set manually)"
+fi
 # Set workflow permissions to read/write and allow PR creation
 if gh api --method PUT repos/:owner/:repo/actions/permissions/workflow \
   -F default_workflow_permissions=write \
