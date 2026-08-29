@@ -51,7 +51,7 @@ jobs:
       uses: git-actions/set-user@49fa9362373dabe0bfcbdb5e8d4da08045ebf6f8 # v1
 
     - name: Setup mise
-      uses: jdx/mise-action@e6a8b3978addb5a52f2b4cd9d91eafa7f0ab959d # v4
+      uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4
 
     - name: Build and upload MOD to Factorio MOD portal
       env:
