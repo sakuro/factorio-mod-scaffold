@@ -90,13 +90,9 @@ fi
 
 # Configure release settings in mise.toml
 print "Configuring release settings in mise.toml ..."
-cat >>mise.toml <<MISE_ENV
-
-[env]
-MOD_LICENSE = "${MOD_LICENSE}"
-MOD_CATEGORY = "no-category"
-MOD_TAGS = ""
-MISE_ENV
+# mise set merges into the existing [env] table. A literal append would emit a
+# second [env] header, which is a duplicate-key error in TOML.
+mise set MOD_LICENSE="${MOD_LICENSE}" MOD_CATEGORY=no-category MOD_TAGS=
 
 # Repository configuration
 print "Configuring GitHub repository settings..."
