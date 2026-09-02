@@ -8,10 +8,9 @@ When opening a pull request:
 ## Changelog
 
 `changelog.txt` uses Factorio's changelog format. On top of that, this project
-marks the section for not-yet-released changes as `Version: Unreleased` — a
-`factorix` convention, not part of the Factorio format. The release workflow
-renames that section to the released version and does not open a new one, so
-between releases the file starts with the last released version.
+marks the section for not-yet-released changes as `Version: Unreleased`. The
+release workflow renames that section to the released version and does not open
+a new one, so between releases the file starts with the last released version.
 
 The first user-visible change of a new cycle therefore needs a fresh
 `Unreleased` section at the top of the file:
