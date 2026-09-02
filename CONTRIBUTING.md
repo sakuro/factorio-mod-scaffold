@@ -7,10 +7,12 @@ When opening a pull request:
 
 ## Changelog
 
-`changelog.txt` follows Factorio's changelog format. Between releases it has no
-`Unreleased` section — its top section is the last released version.
+`changelog.txt` follows Factorio's changelog format. Releasing renames the
+`Unreleased` section to the released version and nothing recreates it, so
+between releases the file starts with the last released version.
 
-For the first user-visible change of a new cycle, prepend an `Unreleased` section:
+The first user-visible change of a new cycle therefore needs a fresh
+`Unreleased` section at the top of the file:
 
 ```
 ---------------------------------------------------------------------------------------------------
