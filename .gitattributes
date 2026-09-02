@@ -25,6 +25,6 @@
 
 */ export-ignore=false
 .*/ export-ignore
-/spec/** export-ignore
+/spec/ export-ignore
 /tasks/ export-ignore
 /doc/ export-ignore
