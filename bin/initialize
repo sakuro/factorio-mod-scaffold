@@ -112,7 +112,10 @@ fi
 DEFAULT_BRANCH="$(gh repo view --json defaultBranchRef -q .defaultBranchRef.name)"
 if gh api --method PUT "repos/:owner/:repo/branches/${DEFAULT_BRANCH}/protection" --input - <<'PROTECTION_JSON' >/dev/null; then
 {
-  "required_status_checks": null,
+  "required_status_checks": {
+    "strict": false,
+    "contexts": ["test"]
+  },
   "enforce_admins": false,
   "required_pull_request_reviews": {
     "required_approving_review_count": 0
