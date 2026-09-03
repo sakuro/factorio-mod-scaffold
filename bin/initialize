@@ -108,6 +108,12 @@ if gh api --silent --method PATCH repos/:owner/:repo -F allow_auto_merge=true; t
 else
   print -- "- Could not enable auto-merge (may need to be set manually)"
 fi
+# Enable GitHub Discussions
+if gh api --silent --method PATCH repos/:owner/:repo -F has_discussions=true; then
+  print -- "- Enabled GitHub Discussions"
+else
+  print -- "- Could not enable GitHub Discussions (may need to be set manually)"
+fi
 # Require pull requests before merging to main (needed for auto-merge to work)
 DEFAULT_BRANCH="$(gh repo view --json defaultBranchRef -q .defaultBranchRef.name)"
 if gh api --method PUT "repos/:owner/:repo/branches/${DEFAULT_BRANCH}/protection" --input - <<'PROTECTION_JSON' >/dev/null; then
