@@ -125,6 +125,12 @@ then
 else
   print -- "- Could not set repository topic (may need to be set manually)"
 fi
+# Set repository website to the MOD portal page
+if gh api --silent --method PATCH repos/:owner/:repo -f homepage="https://mods.factorio.com/mod/${MOD_NAME}"; then
+  print -- "- Set repository website to the MOD portal page"
+else
+  print -- "- Could not set repository website (may need to be set manually)"
+fi
 # Require pull requests before merging to main (needed for auto-merge to work)
 DEFAULT_BRANCH="$(gh repo view --json defaultBranchRef -q .defaultBranchRef.name)"
 if gh api --method PUT "repos/:owner/:repo/branches/${DEFAULT_BRANCH}/protection" --input - <<'PROTECTION_JSON' >/dev/null; then
