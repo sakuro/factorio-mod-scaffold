@@ -31,6 +31,8 @@ Cover pure logic only — code that does not touch the Factorio runtime (`game`,
 
 `spec/example_spec.lua` is a placeholder — replace it with real specs.
 
+`spec/helper.lua` runs once before any spec loads — the place for setup that must precede the first `require` of the code under test (e.g. Factorio global stubs). Keep it idempotent.
+
 ## Release
 
 Releases are handled by GitHub Actions workflows. Do not run `mise run release:*` tasks manually.
