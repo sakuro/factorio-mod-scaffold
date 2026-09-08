@@ -1,5 +1,23 @@
 # Contributing
 
+## Development setup
+
+This project manages its toolchain with [mise](https://mise.jdx.dev/). After cloning:
+
+1. `mise trust` — `mise.toml` defines `[env]` and `[hooks]`, which mise applies only for trusted configs.
+2. `mise install` — installs the pinned tools. Its `postinstall` hook then runs `hk install` to register this repository's Git hooks, and installs `busted` for the test suite.
+
+Review `hk.pkl` and the `git-hooks` package it imports before running the above: `hk install` configures hooks that execute on every commit and push. They enforce, among other things, that commit subjects start with a GitHub `:emoji:` code.
+
+Then `mise run test` runs the unit tests and `mise tasks ls -l` lists this project's tasks (`-l` drops tasks inherited from mise's global config).
+
+### Notes
+
+- Re-run `mise install` after pulling changes to `mise.toml`; Renovate bumps tool versions regularly.
+- Building Lua from source needs the readline development headers (`libreadline-dev` on Debian/Ubuntu, `readline` via Homebrew on macOS).
+
+## Pull requests
+
 When opening a pull request:
 
 - Do not change the version in `info.json`. Version bumping is handled by the release workflow.
