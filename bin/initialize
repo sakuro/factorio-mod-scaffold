@@ -140,6 +140,7 @@ PROJECT_LABELS=(
   'test:0e8a16:Tests and test infrastructure'
   'refactor:d4c5f9:Code restructuring without changing external behavior'
   'icebox:add8e6:Parked for the future; not scheduled for work'
+  'run-ci:1d76db:Add to a scaffold-drift PR to run CI (a GITHUB_TOKEN PR does not trigger workflows)'
 )
 for label_spec in "${PROJECT_LABELS[@]}"; do
   label_name="${label_spec%%:*}"
@@ -203,6 +204,36 @@ if [[ -n "${FACTORIO_API_KEY}" ]]; then
   fi
 else
   print -- "- Skipped FACTORIO_API_KEY (empty input, set it manually later)"
+fi
+
+# Record the scaffold commit this MOD is generated from, for scaffold-drift sync.
+SCAFFOLD_HEAD="$(git ls-remote https://github.com/sakuro/factorio-mod-scaffold HEAD | cut -f1)"
+if [[ -n "${SCAFFOLD_HEAD}" ]]; then
+  jq -n --arg repo "https://github.com/sakuro/factorio-mod-scaffold" \
+        --arg commit "${SCAFFOLD_HEAD}" \
+        --arg synced_at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+        '{repo: $repo, commit: $commit, synced_at: $synced_at}' > .scaffold-sync.json
+  print -- "- Wrote .scaffold-sync.json (baseline ${SCAFFOLD_HEAD})"
+else
+  print -- "- Could not resolve scaffold HEAD; create .scaffold-sync.json manually"
+fi
+
+# ANTHROPIC_API_KEY drives .github/workflows/scaffold-drift.yml. Repo-level secret
+# (the workflow reads secrets.ANTHROPIC_API_KEY at repo scope). Leaving it blank
+# is fine -- the workflow's gate step then no-ops until the secret is added.
+print "** ANTHROPIC_API_KEY runs the weekly scaffold-drift workflow (Claude Code Action). **"
+print "** Create one at https://console.anthropic.com/ (pay-as-you-go, separate from any subscription). **"
+print "** (Leave empty to skip and set it manually later) **"
+read -rs "ANTHROPIC_API_KEY?Enter ANTHROPIC_API_KEY: "
+print
+if [[ -n "${ANTHROPIC_API_KEY}" ]]; then
+  if gh secret set ANTHROPIC_API_KEY --body "${ANTHROPIC_API_KEY}"; then
+    print -- "- Set ANTHROPIC_API_KEY secret"
+  else
+    print -- "- Could not set ANTHROPIC_API_KEY secret (may need to be set manually)"
+  fi
+else
+  print -- "- Skipped ANTHROPIC_API_KEY (empty input, set it manually later)"
 fi
 
 # Finalize initialization
