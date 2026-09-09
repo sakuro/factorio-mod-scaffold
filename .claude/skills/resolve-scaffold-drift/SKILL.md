@@ -26,18 +26,18 @@ Create a TODO per numbered step.
 1. **Preconditions.** Run from the repo root (`git rev-parse --show-toplevel`).
    Confirm `gh auth status` succeeds. Confirm the working tree is clean.
 
-2. **Baseline.** Read `.scaffold-sync.json`.
+2. **Fetch the scaffold.**
+   `git clone --filter=blob:none https://github.com/sakuro/factorio-mod-scaffold <clone>`
+   (public, no auth). Read `<clone>/.scaffold-sync.paths`.
+
+3. **Baseline.** Read `.scaffold-sync.json` for `.commit` (the merge base).
    - If it is missing, this is **bootstrap mode**: get the first commit's
      authored date with `git log --reverse --format=%aI | head -1`, then find the
-     scaffold commit that was current then:
+     scaffold commit that was current then, using the clone from step 2:
      `git -C <clone> rev-list -1 --before="<date>" origin/HEAD`.
      Show the estimated SHA and ask the user to confirm before continuing.
      (In an unattended run with no `.scaffold-sync.json`, stop and report — do
      not guess silently.)
-
-3. **Fetch the scaffold.**
-   `git clone --filter=blob:none https://github.com/sakuro/factorio-mod-scaffold <clone>`
-   (public, no auth). Read `<clone>/.scaffold-sync.paths`.
 
 4. **Mechanical merge.** Run
    `bash <clone>/.claude/skills/resolve-scaffold-drift/merge.sh <clone> <baseline-sha>`
