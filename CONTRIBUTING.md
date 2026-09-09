@@ -46,8 +46,10 @@ version number — the release workflow does the version bump.
 ## Scaffold drift
 
 This repository is generated from
-[`factorio-mod-scaffold`](https://github.com/sakuro/factorio-mod-scaffold). A
-weekly workflow (`.github/workflows/scaffold-drift.yml`) three-way merges the
+[`factorio-mod-scaffold`](https://github.com/sakuro/factorio-mod-scaffold). (In
+`factorio-mod-scaffold` itself this workflow is a deliberate no-op — there is no
+`.scaffold-sync.json`.) A weekly workflow
+(`.github/workflows/scaffold-drift.yml`) three-way merges the
 shared-infrastructure files listed in `.scaffold-sync.paths` against the current
 scaffold and opens or updates one PR on branch `chore/scaffold-drift` when the
 scaffold has moved ahead. `.scaffold-sync.json` records the scaffold commit this
@@ -56,8 +58,9 @@ repo was last synced to.
 **Reviewing a `chore/scaffold-drift` PR**
 
 - The PR is opened with `GITHUB_TOKEN`, so CI does not start on its own. Add the
-  `run-ci` label to run the test lane; after any later push from the workflow,
-  remove and re-add the label to re-run it.
+  `run-ci` label to start it. CI runs on every `labeled` event with no
+  label-name filter, so adding any label (or removing and re-adding one) re-runs
+  it — after a later push from the workflow, re-add a label to re-run.
 - Require the test lane (if this repo has one) to pass.
 - Check that MOD-specific content survived: `mise.toml` `[env] MOD_*`, any doc
   sections this repo added, real `spec/*_spec.lua`.
@@ -71,6 +74,10 @@ repo was last synced to.
 Only with an `ANTHROPIC_API_KEY` repo secret set; blank means the workflow's gate
 step no-ops. A fork does not inherit the secret, so the workflow does nothing on
 a fork and no API cost is incurred.
+
+The first scheduled run can fail the action's `checkHumanActor` check because
+`github.actor` on a `schedule` event is not a `User`. If that happens, set the
+`claude-code-action` `allowed_bots` input in `scaffold-drift.yml`.
 
 **Test lane**
 

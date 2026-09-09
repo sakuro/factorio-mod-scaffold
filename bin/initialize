@@ -220,7 +220,7 @@ fi
 
 # ANTHROPIC_API_KEY drives .github/workflows/scaffold-drift.yml. Repo-level secret
 # (the workflow reads secrets.ANTHROPIC_API_KEY at repo scope). Leaving it blank
-# is fine -- the workflow's gate step then no-ops until the secret is added.
+# is fine — the workflow's gate step then no-ops until the secret is added.
 print "** ANTHROPIC_API_KEY runs the weekly scaffold-drift workflow (Claude Code Action). **"
 print "** Create one at https://console.anthropic.com/ (pay-as-you-go, separate from any subscription). **"
 print "** (Leave empty to skip and set it manually later) **"
