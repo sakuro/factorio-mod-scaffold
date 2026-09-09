@@ -75,15 +75,31 @@ Create a TODO per numbered step.
      manager.
    `git add` the results.
 
-7. **Nothing to do?** If `git diff --cached --quiet` (nothing was staged by steps
-   4–6, and step 8 has not written `.scaffold-sync.json` yet), delete the clone
-   and stop — report "no drift". Do not create a branch or PR.
+7. **Hold back workflow files.** `git push` by `GITHUB_TOKEN` is rejected for any
+   change under `.github/workflows/` ("without `workflows` permission" — a
+   `GITHUB_TOKEN` cannot be granted that). For each such path in
+   `git diff --cached --name-only`:
+   - Save its diff: `git --no-pager diff --cached -- <path>`.
+   - Unstage and revert it: `git restore --staged --worktree -- <path>`.
+   - Set `held_back=1`.
+   Much workflow drift is only `uses:` SHA/tag pin bumps, which each MOD's own
+   Renovate converges independently — those need no manual action. Structural
+   changes (a new job, `permissions:`, a model pin) do.
 
-8. **Bump the baseline.** Rewrite `.scaffold-sync.json`: `commit` = the scaffold
+8. **Nothing to do?** If `git diff --cached --quiet` (nothing was staged by steps
+   4–7, and step 9 has not written `.scaffold-sync.json` yet) **and** `held_back`
+   is unset, delete the clone and stop — report "no drift". Do not create a
+   branch or PR. If only workflow files were held back (nothing else staged),
+   go on — step 9 leaves the baseline alone and step 10 still opens/updates the
+   PR so the held-back diff is visible.
+
+9. **Bump the baseline — only if nothing was held back.** If `held_back` is set,
+   leave `.scaffold-sync.json` unchanged, so the held-back workflow drift stays
+   detectable on the next run. Otherwise rewrite it: `commit` = the scaffold
    clone's HEAD SHA (`git -C <clone> rev-parse HEAD`), `synced_at` = now
    (`date -u +%Y-%m-%dT%H:%M:%SZ`), `repo` unchanged. `git add .scaffold-sync.json`.
 
-9. **Branch, commit, PR.**
+10. **Branch, commit, PR.**
    - **Guard:** `git grep -nE '^(<<<<<<<|>>>>>>>|\|\|\|\|\|\|\|)' -- $(git diff --cached --name-only)`
      must print nothing. If any conflict marker remains, go back to step 5 —
      never commit marker lines. (`=======` is omitted on purpose: a 7-`=` line
@@ -98,13 +114,18 @@ Create a TODO per numbered step.
      - Body: the list of changed paths grouped by `merge.sh` status, the scaffold
        compare link `https://github.com/sakuro/factorio-mod-scaffold/compare/<base>...<head>`,
        and a short note on each conflict you resolved.
+     - If `held_back` is set, add a `## Held back: workflow files` section — for
+       each file, its saved diff in a ` ```diff ` block, and: "apply this by hand
+       (or, if the diff is only `uses:` SHA/tag bumps, let this MOD's Renovate
+       converge it), then bump `.scaffold-sync.json` `commit` to `<head>` and
+       `synced_at` to now." State that the baseline was **not** bumped.
    - `gh pr edit chore/scaffold-drift --add-label chore`.
    - Do **not** add the `run-ci` label — that is the reviewer's trigger, and a
      label set with `GITHUB_TOKEN` would not start CI anyway.
    - Do not touch `changelog.txt`; every tracked path is `export-ignore`d dev
      infrastructure, invisible to MOD users.
 
-10. **Clean up.** Remove the clone.
+11. **Clean up.** Remove the clone.
 
 ## Notes
 
