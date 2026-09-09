@@ -58,8 +58,8 @@ repo was last synced to.
 **Reviewing a `chore/scaffold-drift` PR**
 
 - The PR is opened with `GITHUB_TOKEN`, so CI does not start on its own. Add the
-  `run-ci` label to start it; CI removes that label when it finishes, so after a
-  later push from the workflow you re-run CI by adding `run-ci` again. (CI runs
+  `run-ci` label to start it; CI removes that label as it runs, so after a later
+  push from the workflow you re-run CI by adding `run-ci` again. (CI runs
   for real on every `labeled` event — there is no label-name filter, since a
   skipped required check counts as passing — so adding any label also re-runs
   it.)

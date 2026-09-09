@@ -56,8 +56,9 @@ jobs:
 
     steps:
     - name: Remove the run-ci label
+      continue-on-error: true  # best-effort; a failure here must not block the PR
       env:
         GH_TOKEN: ${{ github.token }}
         PR: ${{ github.event.pull_request.number }}
         REPO: ${{ github.repository }}
-      run: gh pr edit "$PR" --repo "$REPO" --remove-label run-ci || true
+      run: gh pr edit "$PR" --repo "$REPO" --remove-label run-ci
