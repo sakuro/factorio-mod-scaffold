@@ -31,7 +31,7 @@
 set -uo pipefail
 
 if [ "${BASH_VERSINFO[0]:-0}" -lt 4 ]; then
-  echo "merge.sh: needs bash >= 4 (found ${BASH_VERSION:-unknown}); on macOS install one via Homebrew or mise" >&2
+  echo "merge.sh: needs bash >= 4 (found ${BASH_VERSION:-unknown}); on macOS install one via Homebrew etc." >&2
   exit 2
 fi
 
