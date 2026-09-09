@@ -131,6 +131,28 @@ if gh api --silent --method PATCH repos/:owner/:repo -f homepage="https://mods.f
 else
   print -- "- Could not set repository website (may need to be set manually)"
 fi
+# Define project-specific issue labels. GitHub auto-provisions its standard set
+# (bug, enhancement, accessibility, ...) on repository creation; these are the
+# extra labels this project relies on and GitHub does not create.
+print "Defining project-specific issue labels ..."
+PROJECT_LABELS=(
+  'chore:e4b429:Maintenance, tooling, and housekeeping'
+  'test:0e8a16:Tests and test infrastructure'
+  'refactor:d4c5f9:Code restructuring without changing external behavior'
+  'icebox:add8e6:Parked for the future; not scheduled for work'
+)
+for label_spec in "${PROJECT_LABELS[@]}"; do
+  label_name="${label_spec%%:*}"
+  label_rest="${label_spec#*:}"
+  label_color="${label_rest%%:*}"
+  label_description="${label_rest#*:}"
+  # --force so a re-run, or a name GitHub already took, updates instead of failing
+  if gh label create "${label_name}" --color "${label_color}" --description "${label_description}" --force >/dev/null 2>&1; then
+    print -- "- Defined '${label_name}' label"
+  else
+    print -- "- Could not define '${label_name}' label (may need to be created manually)"
+  fi
+done
 # Require pull requests before merging to main (needed for auto-merge to work)
 DEFAULT_BRANCH="$(gh repo view --json defaultBranchRef -q .defaultBranchRef.name)"
 if gh api --method PUT "repos/:owner/:repo/branches/${DEFAULT_BRANCH}/protection" --input - <<'PROTECTION_JSON' >/dev/null; then

@@ -37,6 +37,7 @@ This project serves as a scaffold for creating Factorio MODs.
       - GitHub Discussions
       - Repository topics (`factorio-mod`)
       - Repository website (MOD portal page)
+      - Issue labels (project-specific additions; see [Issue labels](#issue-labels))
       - Branch protection requiring pull requests
       - Workflow permissions
       - `release` environment
@@ -48,3 +49,19 @@ This project serves as a scaffold for creating Factorio MODs.
    - MOD name, title, and author are derived from the current directory name and the GitHub repository owner; edit `info.json` and `locale/en/<MOD_NAME>.cfg` afterward if they need to be different. MOD category and tags are written to `mise.toml` with their default values (`no-category` and empty, respectively) and can be edited there.
 
 5. Your MOD scaffold will be ready
+
+## Issue labels
+
+GitHub provisions its standard label set (`bug`, `documentation`, `duplicate`,
+`enhancement`, `good first issue`, `help wanted`, `invalid`, `question`,
+`wontfix`, `accessibility`) on every new repository. `./bin/initialize` adds
+four project-specific labels:
+
+| Label | Color | Description |
+| --- | --- | --- |
+| `chore` | `e4b429` | Maintenance, tooling, and housekeeping |
+| `test` | `0e8a16` | Tests and test infrastructure |
+| `refactor` | `d4c5f9` | Code restructuring without changing external behavior |
+| `icebox` | `add8e6` | Parked for the future; not scheduled for work |
+
+An initialized repository ends up with 14 labels: the 10 standard ones plus these four.
