@@ -7,12 +7,13 @@ on:
     branches: [main]
 
 jobs:
+  # `labeled` is a trigger so a drift PR (opened with GITHUB_TOKEN, which does not
+  # start workflows on its own) can be kicked off by adding the `run-ci` label.
+  # There is no job-level `if:` filter on the label name on purpose: a skipped
+  # job reports as passing, so filtering here could let a label add turn a red
+  # required check green. Every `labeled` event therefore runs CI for real —
+  # adding any label re-runs it, which is harmless.
   test:
-    # A drift PR is opened with GITHUB_TOKEN and does not trigger workflows on its
-    # own; adding the `run-ci` label opts it in. Other label events are inert.
-    if: >-
-      github.event.action != 'labeled' ||
-      github.event.label.name == 'run-ci'
     runs-on: ubuntu-latest
 
     steps:
@@ -27,3 +28,16 @@ jobs:
 
     - name: Run tests
       run: mise run test
+
+  # Regression coverage for the scaffold-drift merge script. The runner has
+  # bash 5, so merge.sh's bash-4 features actually run here. Not a required
+  # status check.
+  merge-script:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+    - name: Run merge.sh fixture test
+      run: bash .claude/skills/resolve-scaffold-drift/merge_test.sh

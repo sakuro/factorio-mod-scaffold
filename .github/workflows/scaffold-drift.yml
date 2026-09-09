@@ -12,9 +12,16 @@ permissions:
   contents: write
   pull-requests: write
 
+# One drift run at a time: overlapping runs would both force-push
+# chore/scaffold-drift. Do not cancel a run in progress — it may be mid-PR.
+concurrency:
+  group: scaffold-drift
+  cancel-in-progress: false
+
 jobs:
   drift:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Gate on API key
         id: gate
@@ -44,7 +51,16 @@ jobs:
             echo "drift=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
+          [ -f .scaffold-sync.paths ] || { echo ".scaffold-sync.paths missing" >&2; echo "drift=false" >> "$GITHUB_OUTPUT"; exit 0; }
           base=$(jq -r .commit .scaffold-sync.json)
+          # A malformed .scaffold-sync.json makes jq print "null" (or a stray
+          # value); without this the diff below fails and every error looks like
+          # drift, burning a weekly Claude run.
+          if ! printf '%s' "$base" | grep -qE '^[0-9a-f]{40}$'; then
+            echo "invalid baseline commit in .scaffold-sync.json: $base" >&2
+            echo "drift=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           git clone --filter=blob:none --no-checkout \
             https://github.com/sakuro/factorio-mod-scaffold /tmp/scaffold
           mapfile -t globs < <(sed -e 's/#.*//' -e '/^[[:space:]]*$/d' .scaffold-sync.paths)
@@ -63,8 +79,8 @@ jobs:
           prompt: >
             Invoke the resolve-scaffold-drift skill. Open or update a PR on
             branch chore/scaffold-drift. Do nothing if there is no drift.
-          # The skill needs Bash (git/gh/merge.sh), Read/Edit/Write/Glob/Grep and
-          # TodoWrite. Leave claude_args unset so the action's default (permissive
-          # in CI) applies; add a scoped "--allowed-tools ..." only if a run shows
-          # the skill being under-permitted.
-          # claude_args: "--allowed-tools ..."
+          # Agent mode grants no tools by default; the skill drives git / gh /
+          # merge.sh, so it must be allowed explicitly. Bash is unscoped here
+          # (first-party skill, ephemeral runner, scoped GITHUB_TOKEN); scope it
+          # to Bash(git:*),Bash(gh:*),… later if desired.
+          claude_args: "--permission-mode acceptEdits --allowedTools 'Bash,Read,Write,Edit,Glob,Grep,TodoWrite,Skill'"
