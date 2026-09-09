@@ -63,4 +63,8 @@ jobs:
           prompt: >
             Invoke the resolve-scaffold-drift skill. Open or update a PR on
             branch chore/scaffold-drift. Do nothing if there is no drift.
-          claude_args: "--allowedTools Bash,Read,Edit,Write,Glob,Grep"
+          # The skill needs Bash (git/gh/merge.sh), Read/Edit/Write/Glob/Grep and
+          # TodoWrite. Leave claude_args unset so the action's default (permissive
+          # in CI) applies; add a scoped "--allowed-tools ..." only if a run shows
+          # the skill being under-permitted.
+          # claude_args: "--allowed-tools ..."
