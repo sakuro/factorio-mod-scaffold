@@ -18,7 +18,10 @@
 #   DELETE <path>    file removed to follow the scaffold
 #   CONFLICT <path>  conflict markers written; needs a human / Claude decision
 #   SKIP <path>      no change (identical, scaffold untouched since the baseline,
-#                    or a deletion the MOD made on purpose)
+#                    a deletion the MOD made on purpose, or a symlink we refuse
+#                    to touch)
+#   ERROR <path>     merge.sh could not process the path (e.g. `git merge-file`
+#                    hard error); the caller must stop and report, not commit
 #
 # Exits 0 even when CONFLICT lines are printed. Exits 2 on a usage/setup error.
 # Does NOT edit .scaffold-sync.json, does NOT commit, and does NOT touch the
@@ -26,6 +29,11 @@
 # handles those.
 
 set -uo pipefail
+
+if [ "${BASH_VERSINFO[0]:-0}" -lt 4 ]; then
+  echo "merge.sh: needs bash >= 4 (found ${BASH_VERSION:-unknown}); on macOS install one via Homebrew or mise" >&2
+  exit 2
+fi
 
 scaffold=${1:?usage: merge.sh <scaffold-clone-dir> <baseline-sha>}
 base=${2:?usage: merge.sh <scaffold-clone-dir> <baseline-sha>}
@@ -67,6 +75,16 @@ for path in $(printf '%s\n' "${!seen[@]}" | LC_ALL=C sort); do
   tmp=$(mktemp -d)
   b="$tmp/base"; t="$tmp/theirs"; o="$tmp/ours"
   hb=0; ht=0; ho=0
+
+  # Scaffold-side mode for this path (empty if it exists only in ours).
+  mode=$(git -C "$scaffold" ls-tree "$theirs_ref" -- "$path" | awk '{print $1}')
+  if [ "$mode" = "120000" ]; then
+    echo "merge.sh: skipping symlink $path" >&2
+    status SKIP "$path"
+    rm -rf "$tmp"
+    continue
+  fi
+
   if git -C "$scaffold" cat-file -e "$base:$path" 2>/dev/null; then
     git -C "$scaffold" show "$base:$path" > "$b"; hb=1
   fi
@@ -83,11 +101,12 @@ for path in $(printf '%s\n' "${!seen[@]}" | LC_ALL=C sort); do
     else
       mkdir -p "$(dirname "$path")"
       cp "$t" "$path"; git add -f -- "$path"
+      [ "$mode" = "100755" ] && chmod +x "$path"
       status CREATE "$path"
     fi
   elif [ $ht -eq 0 ] && [ $ho -eq 1 ]; then
     if [ $hb -eq 1 ] && cmp -s "$b" "$o"; then
-      git rm -q -f -- "$path"; status DELETE "$path"
+      if git rm -q -f -- "$path"; then status DELETE "$path"; else status SKIP "$path"; fi
     elif [ $hb -eq 1 ]; then
       status CONFLICT "$path"                   # scaffold deleted, MOD modified
     else
@@ -101,13 +120,21 @@ for path in $(printf '%s\n' "${!seen[@]}" | LC_ALL=C sort); do
     else
       base_arg="$b"
       [ $hb -eq 1 ] || { : > "$tmp/empty"; base_arg="$tmp/empty"; }
-      if git merge-file -L ours -L base -L theirs --diff3 -p \
-           "$o" "$base_arg" "$t" > "$tmp/out" 2>/dev/null; then
+      # Capture the exit code as a plain statement: `$?` right after an `if`
+      # would reflect the `if` condition, not `git merge-file`. rc is 0 on a
+      # clean merge, 1..127 for that many conflict regions, >=128 on a hard
+      # error (I/O, binary input) -- which we must not stage.
+      git merge-file -L ours -L base -L theirs --diff3 -p \
+        "$o" "$base_arg" "$t" > "$tmp/out" 2>/dev/null
+      rc=$?
+      if [ "$rc" -eq 0 ]; then
         cp "$tmp/out" "$path"; git add -f -- "$path"
         status CLEAN "$path"
-      else
+      elif [ "$rc" -lt 128 ] && [ -s "$tmp/out" ]; then
         cp "$tmp/out" "$path"; git add -f -- "$path"
         status CONFLICT "$path"
+      else
+        status ERROR "$path"
       fi
     fi
   fi
