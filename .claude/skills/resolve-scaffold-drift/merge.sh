@@ -100,8 +100,9 @@ for path in $(printf '%s\n' "${!seen[@]}" | LC_ALL=C sort); do
       status CONFLICT "$path"                   # MOD deleted, scaffold changed
     else
       mkdir -p "$(dirname "$path")"
-      cp "$t" "$path"; git add -f -- "$path"
+      cp "$t" "$path"
       [ "$mode" = "100755" ] && chmod +x "$path"
+      git add -f -- "$path"
       status CREATE "$path"
     fi
   elif [ $ht -eq 0 ] && [ $ho -eq 1 ]; then
