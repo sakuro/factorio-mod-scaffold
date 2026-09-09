@@ -57,7 +57,7 @@ This project serves as a scaffold for creating Factorio MODs.
 GitHub provisions its standard label set (`bug`, `documentation`, `duplicate`,
 `enhancement`, `good first issue`, `help wanted`, `invalid`, `question`,
 `wontfix`, `accessibility`) on every new repository. `./bin/initialize` adds
-four project-specific labels:
+five project-specific labels:
 
 | Label | Color | Description |
 | --- | --- | --- |
