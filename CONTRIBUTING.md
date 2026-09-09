@@ -58,9 +58,11 @@ repo was last synced to.
 **Reviewing a `chore/scaffold-drift` PR**
 
 - The PR is opened with `GITHUB_TOKEN`, so CI does not start on its own. Add the
-  `run-ci` label to start it. CI runs on every `labeled` event with no
-  label-name filter, so adding any label (or removing and re-adding one) re-runs
-  it — after a later push from the workflow, re-add a label to re-run.
+  `run-ci` label to start it; CI removes that label when it finishes, so after a
+  later push from the workflow you re-run CI by adding `run-ci` again. (CI runs
+  for real on every `labeled` event — there is no label-name filter, since a
+  skipped required check counts as passing — so adding any label also re-runs
+  it.)
 - Require the test lane (if this repo has one) to pass.
 - Check that MOD-specific content survived: `mise.toml` `[env] MOD_*`, any doc
   sections this repo added, real `spec/*_spec.lua`.
