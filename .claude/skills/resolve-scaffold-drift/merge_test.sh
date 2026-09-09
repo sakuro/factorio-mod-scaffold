@@ -37,6 +37,9 @@ mergeable.txt
 gone.txt
 newfile.txt
 tasks/build
+tasks/newexec
+LINK.md
+bin.dat
 .busted
 .github/workflows/ci.yml
 tasks/test
@@ -50,7 +53,10 @@ printf 'build v1\n'      > tasks/build
 printf 'busted\n'        > .busted
 printf 'ci v1\n'         > .github/workflows/ci.yml
 printf 'test\n'          > tasks/test
-printf '\n'             > spec/helper.lua
+printf '\n'              > spec/helper.lua
+printf 'agents\n'        > AGENTS.md          # symlink target for LINK.md
+ln -s AGENTS.md LINK.md                       # tracked symlink -> merge.sh must SKIP
+printf 'AAAA\n'          > bin.dat            # theirs turns this into NUL bytes -> merge-file hard error
 git_quiet add -A
 git_quiet commit -m ":seedling: base"
 base=$(git rev-parse HEAD)
@@ -61,6 +67,9 @@ git_quiet rm -q gone.txt                       # theirs deletes the file
 printf 'new v1\n'        > newfile.txt          # theirs adds a file
 printf 'build v2\n'      > tasks/build          # theirs-only change
 printf 'test v2\n'       > tasks/test           # theirs changes a disabled-lane file
+printf '#!/bin/sh\necho hi\n' > tasks/newexec   # theirs adds an executable the MOD lacks -> CREATE
+chmod +x tasks/newexec
+printf '\x00\x01\x02BBBB\n'   > bin.dat          # NUL bytes -> git merge-file hard error -> ERROR
 git_quiet add -A
 git_quiet commit -m ":sparkles: theirs"
 
@@ -74,6 +83,7 @@ printf 'a\nb\nc\nd\nE\n' > mergeable.txt        # ours changes line 5 (non-adjac
 printf 'delete me\n'     > gone.txt             # unchanged from base -> follow deletion
 mkdir -p tasks
 printf 'build v1\nlocal tweak\n' > tasks/build  # ours changed too -> conflict
+printf 'AAAAlocal\n'     > bin.dat              # all three differ -> merge-file runs and hard-errors
 git_quiet add -A
 git_quiet commit -m ":seedling: mod"
 # no .busted, no .github/workflows/ci.yml -> test lane disabled
@@ -101,5 +111,29 @@ if grep -q '<<<<<<< ours' tasks/build; then
 else
   echo "FAIL - conflict markers"; fail=1
 fi
+
+# --- exec bit on CREATE ----------------------------------------------------
+# tasks/newexec is added scaffold-side only and is 100755 there; the CREATE
+# branch must chmod +x *before* `git add` so the mode reaches the MOD index.
+check "tasks/newexec created"        "CREATE tasks/newexec" "$(line 'tasks/newexec')"
+check "tasks/newexec staged 100755"  "100755" "$(git -C "$mod" ls-files -s tasks/newexec | awk '{print $1}')"
+
+# --- symlink SKIP --------------------------------------------------------------
+# LINK.md is a tracked symlink in the scaffold; merge.sh must refuse it and
+# never write a regular file in its place.
+check "LINK.md skipped (symlink)"    "SKIP LINK.md" "$(line 'LINK.md')"
+check "LINK.md not created"           "" "$(printf '%s\n' "$out" | grep -E '^CREATE LINK\.md$' || true)"
+check "LINK.md not materialised as regular file" "absent-or-symlink" \
+  "$(if [ ! -e "$mod/LINK.md" ]; then echo absent-or-symlink; \
+     elif [ -L "$mod/LINK.md" ]; then echo absent-or-symlink; \
+     else echo "regular:$(cat "$mod/LINK.md")"; fi)"
+
+# --- merge-file hard error -> ERROR -----------------------------------------
+# bin.dat differs on all three sides and "theirs" holds NUL bytes, so the
+# both-exist branch runs `git merge-file`, which hard-errors. merge.sh must
+# report ERROR and leave the path unstaged and intact.
+check "bin.dat errored"              "ERROR bin.dat" "$(line 'bin.dat')"
+check "bin.dat not staged"            "" "$(git -C "$mod" diff --cached --name-only | grep -x 'bin.dat' || true)"
+check "bin.dat not truncated to empty" "AAAAlocal" "$(cat "$mod/bin.dat")"
 
 exit $fail
