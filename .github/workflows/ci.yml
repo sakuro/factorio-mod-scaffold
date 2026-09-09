@@ -2,11 +2,17 @@ name: CI
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, labeled]
   push:
     branches: [main]
 
 jobs:
   test:
+    # A drift PR is opened with GITHUB_TOKEN and does not trigger workflows on its
+    # own; adding the `run-ci` label opts it in. Other label events are inert.
+    if: >-
+      github.event.action != 'labeled' ||
+      github.event.label.name == 'run-ci'
     runs-on: ubuntu-latest
 
     steps:
