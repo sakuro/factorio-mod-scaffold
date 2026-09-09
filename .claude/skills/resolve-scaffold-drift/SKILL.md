@@ -35,7 +35,10 @@ Create a TODO per numbered step.
      authored date with `git log --reverse --format=%aI | head -1`, then find the
      scaffold commit that was current then, using the clone from step 2:
      `git -C <clone> rev-list -1 --before="<date>" origin/HEAD`.
-     Show the estimated SHA and ask the user to confirm before continuing.
+     If that prints nothing — the MOD's history predates the scaffold's — fall
+     back to the scaffold's root commit:
+     `git -C <clone> rev-list --max-parents=0 origin/HEAD | tail -1`.
+     Show the resulting SHA and ask the user to confirm before continuing.
      (In an unattended run with no `.scaffold-sync.json`, stop and report — do
      not guess silently.)
 
@@ -103,3 +106,7 @@ Create a TODO per numbered step.
 - If `merge.sh` prints `CONFLICT` for a delete/modify case (scaffold deleted a
   file this repo still changes, or vice versa), decide per file: usually follow
   the scaffold unless the MOD clearly depends on it, and mention it in the PR body.
+- Always operate on the checked-out working tree. Never rebuild the MOD from
+  `git archive` — this repo's `.gitattributes` marks the scaffold-tracked files
+  (`.busted`, `.github/**`, `tasks/**`, `mise.toml`, …) `export-ignore`, so an
+  archive drops exactly what this skill syncs.
