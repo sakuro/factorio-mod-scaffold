@@ -38,6 +38,12 @@ jobs:
         id: check
         if: steps.gate.outputs.proceed == 'true'
         run: |
+          # No .scaffold-sync.json (e.g. the scaffold repo itself) -> nothing to sync.
+          if [ ! -f .scaffold-sync.json ]; then
+            echo "no .scaffold-sync.json - not a derived MOD, skipping." >&2
+            echo "drift=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           base=$(jq -r .commit .scaffold-sync.json)
           git clone --filter=blob:none --no-checkout \
             https://github.com/sakuro/factorio-mod-scaffold /tmp/scaffold
