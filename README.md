@@ -9,6 +9,7 @@ This project serves as a scaffold for creating Factorio MODs.
 - A configured Git identity (`git config user.name` and `user.email`) — used for the initial commit's authorship and, when `MOD_LICENSE=default_mit`, embedded as the `LICENSE.txt` copyright holder
 - [gh CLI](https://cli.github.com/) authenticated (`gh auth login`) with admin access to the new repository — `./bin/initialize` changes repository settings, creates the `release` environment, and sets its secret
 - A Factorio Mod Portal API key with the [`ModPortal: Publish Mods`](https://wiki.factorio.com/Mod_publish_API), [`ModPortal: Upload Mods`](https://wiki.factorio.com/Mod_upload_API), and [`ModPortal: Edit Mods`](https://wiki.factorio.com/Mod_details_API) usages, created at https://factorio.com/profile — `./bin/initialize` will prompt for this to set the `FACTORIO_API_KEY` secret
+- Optionally, an [Anthropic API key](https://console.anthropic.com/) — `./bin/initialize` will prompt for it to set the `ANTHROPIC_API_KEY` secret that runs the weekly scaffold-drift workflow. Leave it blank to skip; the workflow no-ops until the secret is set.
 
 ## Usage
 
@@ -42,6 +43,7 @@ This project serves as a scaffold for creating Factorio MODs.
       - Workflow permissions
       - `release` environment
       - `FACTORIO_API_KEY` secret
+      - `.scaffold-sync.json` baseline and the `ANTHROPIC_API_KEY` secret for the scaffold-drift workflow
    7. Remove `bin/initialize` itself and amend the initial commit
 
    - `MOD_LICENSE` can be set to customize the license (defaults to `default_mit`); see [License identifier](https://wiki.factorio.com/Mod_details_API#License)
@@ -63,5 +65,14 @@ four project-specific labels:
 | `test` | `0e8a16` | Tests and test infrastructure |
 | `refactor` | `d4c5f9` | Code restructuring without changing external behavior |
 | `icebox` | `add8e6` | Parked for the future; not scheduled for work |
+| `run-ci` | `1d76db` | Add to a scaffold-drift PR to run CI |
 
-An initialized repository ends up with 14 labels: the 10 standard ones plus these four.
+An initialized repository ends up with 15 labels: the 10 standard ones plus these five. `run-ci` is a PR-control label rather than an issue label.
+
+## Scaffold drift
+
+`.github/workflows/scaffold-drift.yml` runs weekly in each generated MOD and, via
+[Claude Code Action](https://github.com/anthropics/claude-code-action), opens a
+`chore/scaffold-drift` PR when this scaffold's shared infrastructure has moved
+ahead of the MOD. It is gated on the `ANTHROPIC_API_KEY` secret and does nothing
+on a fork. See `CONTRIBUTING.md` for how to review those PRs.
