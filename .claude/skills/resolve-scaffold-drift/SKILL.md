@@ -44,8 +44,13 @@ Create a TODO per numbered step.
 
 4. **Mechanical merge.** Run
    `bash <clone>/.claude/skills/resolve-scaffold-drift/merge.sh <clone> <baseline-sha>`
-   from the repo root. It applies clean results and prints one line per path:
-   `CLEAN` / `CREATE` / `DELETE` / `SKIP` / `CONFLICT`. Keep the output.
+   from the repo root — invoke it through `bash` explicitly. `merge.sh` needs
+   bash ≥ 4 (`declare -A`); on macOS use a non-system bash (Homebrew or mise),
+   because bash 3.2 makes it exit 2 without merging anything. It applies clean
+   results and prints one line per path:
+   `CLEAN` / `CREATE` / `DELETE` / `CONFLICT` / `SKIP`. Keep the output.
+   An `ERROR <path>` line means `merge.sh` could not process that path — stop
+   and report it, do not commit.
 
 5. **Resolve conflicts.** For every `CONFLICT <path>`, open the file and resolve
    the `<<<<<<< ours` / `||||||| base` / `>>>>>>> theirs` markers by hand:
@@ -70,17 +75,19 @@ Create a TODO per numbered step.
      manager.
    `git add` the results.
 
-7. **Bump the baseline.** Rewrite `.scaffold-sync.json`: `commit` = the scaffold
+7. **Nothing to do?** If `git diff --cached --quiet` (nothing was staged by steps
+   4–6, and step 8 has not written `.scaffold-sync.json` yet), delete the clone
+   and stop — report "no drift". Do not create a branch or PR.
+
+8. **Bump the baseline.** Rewrite `.scaffold-sync.json`: `commit` = the scaffold
    clone's HEAD SHA (`git -C <clone> rev-parse HEAD`), `synced_at` = now
    (`date -u +%Y-%m-%dT%H:%M:%SZ`), `repo` unchanged. `git add .scaffold-sync.json`.
 
-8. **Nothing to do?** If `git diff --cached --quiet`, delete the clone and stop —
-   report "no drift". Do not create a branch or PR.
-
 9. **Branch, commit, PR.**
-   - **Guard:** `git grep -nE '^(<<<<<<<|=======|>>>>>>>|\|\|\|\|\|\|\|)' -- $(git diff --cached --name-only)`
+   - **Guard:** `git grep -nE '^(<<<<<<<|>>>>>>>|\|\|\|\|\|\|\|)' -- $(git diff --cached --name-only)`
      must print nothing. If any conflict marker remains, go back to step 5 —
-     never commit marker lines.
+     never commit marker lines. (`=======` is omitted on purpose: a 7-`=` line
+     is also a Markdown setext-heading underline.)
    - `git switch -C chore/scaffold-drift`.
    - Commit:
      `git commit -m ":arrows_counterclockwise: Sync scaffold drift (<short-base>..<short-head>)"`
