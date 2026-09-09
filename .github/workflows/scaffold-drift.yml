@@ -11,6 +11,9 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  # No `workflows` scope: GITHUB_TOKEN cannot be granted it, so a drift PR cannot
+  # carry `.github/workflows/**` changes. The skill holds those back into the PR
+  # body (see CONTRIBUTING.md "Held-back workflow files").
 
 # One drift run at a time: overlapping runs would both force-push
 # chore/scaffold-drift. Do not cancel a run in progress — it may be mid-PR.
