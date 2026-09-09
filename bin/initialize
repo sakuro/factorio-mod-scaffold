@@ -207,6 +207,12 @@ else
 fi
 
 # Record the scaffold commit this MOD is generated from, for scaffold-drift sync.
+# NOTE: this is the scaffold's live HEAD now, which matches the template snapshot
+# only if no scaffold commit landed between "Use this template" and this run.
+# Commits made in that window are baselined out -- the first scaffold-drift PR
+# will not carry their changes (a later scaffold edit to the same files still
+# syncs). The window is normally minutes; review the first chore/scaffold-drift
+# PR if the scaffold was active around then.
 SCAFFOLD_HEAD="$(git ls-remote https://github.com/sakuro/factorio-mod-scaffold HEAD | cut -f1)"
 if [[ -n "${SCAFFOLD_HEAD}" ]]; then
   jq -n --arg repo "https://github.com/sakuro/factorio-mod-scaffold" \
