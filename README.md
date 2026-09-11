@@ -39,12 +39,12 @@ This project serves as a scaffold for creating Factorio MODs.
       - Repository topics (`factorio-mod`)
       - Repository website (MOD portal page)
       - Issue labels (project-specific additions; see [Issue labels](#issue-labels))
-      - Branch protection requiring pull requests
       - Workflow permissions
       - `release` environment
       - `FACTORIO_API_KEY` secret
       - `.scaffold-sync.json` baseline and the `ANTHROPIC_API_KEY` secret for the scaffold-drift workflow
-   7. Remove `bin/initialize` itself and amend the initial commit
+   7. Remove `bin/initialize` itself, amend the initial commit, and force-push it
+   8. Configure branch protection requiring pull requests
 
    - `MOD_LICENSE` can be set to customize the license (defaults to `default_mit`); see [License identifier](https://wiki.factorio.com/Mod_details_API#License)
    - Example: `MOD_LICENSE=default_gnulgplv3 ./bin/initialize`
