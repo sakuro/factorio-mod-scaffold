@@ -9,6 +9,7 @@
 .github/workflows/scaffold-drift.yml
 .github/renovate.json
 hk.pkl
+stylua.toml
 .gitattributes
 .gitignore
 mise.toml
@@ -19,6 +20,8 @@ tasks/build
 tasks/clean
 tasks/install
 tasks/test
+tasks/format
+tasks/format-check
 tasks/release/github
 tasks/release/portal
 .busted
