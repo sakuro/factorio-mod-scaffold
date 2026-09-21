@@ -10,6 +10,8 @@
 .github/renovate.json
 hk.pkl
 stylua.toml
+.luacheckrc
+.luarc.json
 .gitattributes
 .gitignore
 mise.toml
@@ -22,6 +24,7 @@ tasks/install
 tasks/test
 tasks/format
 tasks/format-check
+tasks/lint
 tasks/release/github
 tasks/release/portal
 .busted
