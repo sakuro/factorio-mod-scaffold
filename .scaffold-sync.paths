@@ -16,7 +16,6 @@ stylua.toml
 .gitignore
 mise.toml
 AGENTS.md
-# CLAUDE.md is a symlink to AGENTS.md (template-created); not synced.
 CONTRIBUTING.md
 tasks/build
 tasks/clean
