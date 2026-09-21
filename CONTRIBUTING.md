@@ -15,6 +15,7 @@ Then `mise run format` formats Lua code, `mise run lint` runs `luacheck`, `mise 
 
 - Re-run `mise install` after pulling changes to `mise.toml`; Renovate bumps tool versions regularly.
 - Building Lua from source needs the readline development headers (`libreadline-dev` on Debian/Ubuntu, `readline` via Homebrew on macOS).
+- `mise run build` needs `unzip` (preinstalled on macOS and most Linux distributions): it reads the commit ID stored in the existing archive to decide whether to rebuild it.
 
 ## Pull requests
 
