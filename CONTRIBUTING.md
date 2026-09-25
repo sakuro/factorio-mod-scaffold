@@ -63,7 +63,8 @@ repo was last synced to.
   push from the workflow you re-run CI by adding `run-ci` again. (CI runs
   for real on every `labeled` event — there is no label-name filter, since a
   skipped required check counts as passing — so adding any label also re-runs
-  it.)
+  it.) A repo that has dropped the test lane has no `ci.yml`, so nothing listens
+  for `labeled`: the label starts nothing and stays on the PR.
 - Require the test lane (if this repo has one) to pass.
 - Check that MOD-specific content survived: `mise.toml` `[env] MOD_*`, any doc
   sections this repo added, real `spec/*_spec.lua`.
