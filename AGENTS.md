@@ -76,3 +76,5 @@ Do not create a section for the next release version directly — version bumpin
 - [Factorio Wiki](https://wiki.factorio.com/)
 - [factorio-data](https://github.com/wube/factorio-data) — base game's data definitions; clone locally if needed
 - Game directories (mod dir, user dir, data dir, etc.): `factorix path --json | jq -r .<field>` (e.g. `.mod_dir`)
+- Other MODs: to investigate a MOD's contents, download it with `factorix mod download <mod-name> -d tmp` rather than guessing; if its source is on GitHub or Codeberg, refer to that as well
+- Game terminology: use the wording in the locale files under the data directory (`<data_dir>/<base|space-age|...>/locale/<lang>/*.cfg`) so that terms match the game
