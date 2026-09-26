@@ -140,7 +140,6 @@ PROJECT_LABELS=(
   'test:0e8a16:Tests and test infrastructure'
   'refactor:d4c5f9:Code restructuring without changing external behavior'
   'icebox:add8e6:Parked for the future; not scheduled for work'
-  'run-ci:1d76db:Add to a scaffold-drift PR to run CI (a GITHUB_TOKEN PR does not trigger workflows)'
 )
 for label_spec in "${PROJECT_LABELS[@]}"; do
   label_name="${label_spec%%:*}"
@@ -246,7 +245,7 @@ if gh api --method PUT "repos/:owner/:repo/branches/${DEFAULT_BRANCH}/protection
 {
   "required_status_checks": {
     "strict": false,
-    "contexts": ["test"]
+    "contexts": ["spec", "format-check", "lint"]
   },
   "enforce_admins": false,
   "required_pull_request_reviews": {
