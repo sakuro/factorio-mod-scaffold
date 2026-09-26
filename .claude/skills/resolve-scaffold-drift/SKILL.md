@@ -70,7 +70,9 @@ Create a TODO per numbered step.
    - `.github/renovate.json` `customManagers` — the `lunarmodules/busted` regex
      manager.
    Keep the `lua` tool, the luacheck postinstall element, and the Renovate rule
-   that disables `lua` updates: luacheck runs on Lua in every MOD.
+   that disables `lua` updates: luacheck runs on Lua in every MOD. An earlier
+   sync removed `lua` and that rule as test-lane fragments, and the three-way
+   merge preserves that removal, so copy any that are missing from the scaffold.
    `git add` the results.
 
 7. **Hold back paths this run cannot apply.** Two path classes can't be carried
