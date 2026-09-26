@@ -57,7 +57,7 @@ This project serves as a scaffold for creating Factorio MODs.
 GitHub provisions its standard label set (`bug`, `documentation`, `duplicate`,
 `enhancement`, `good first issue`, `help wanted`, `invalid`, `question`,
 `wontfix`, `accessibility`) on every new repository. `./bin/initialize` adds
-five project-specific labels:
+four project-specific labels:
 
 | Label | Color | Description |
 | --- | --- | --- |
@@ -65,9 +65,8 @@ five project-specific labels:
 | `test` | `0e8a16` | Tests and test infrastructure |
 | `refactor` | `d4c5f9` | Code restructuring without changing external behavior |
 | `icebox` | `add8e6` | Parked for the future; not scheduled for work |
-| `run-ci` | `1d76db` | Add to a scaffold-drift PR to run CI |
 
-An initialized repository ends up with 15 labels: the 10 standard ones plus these five. `run-ci` is a PR-control label rather than an issue label.
+An initialized repository ends up with 14 labels: the 10 standard ones plus these four.
 
 ## Scaffold drift
 
