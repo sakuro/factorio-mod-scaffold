@@ -209,7 +209,7 @@ secrets, and a public repository's Actions logs are public too.
 A repo with no `.busted` file has dropped the test lane. The sync never re-adds
 the test files (`.github/workflows/spec.yml`, `.busted`, `tasks/test`,
 `spec/helper.lua`) or the busted fragments in `mise.toml` /
-`.github/renovate.json`. Lua stays installed for luacheck.
+`.github/renovate.json` / `AGENTS.md`. Lua stays installed for luacheck.
 
 **If a sync looks wrong**
 
