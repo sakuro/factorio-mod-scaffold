@@ -43,7 +43,7 @@ CONTRIBUTING.md "Comment conventions".
 
 Cover pure logic only — code that does not touch the Factorio runtime (`game`, `script`, `rendering`, `defines`, `data`, prototype globals). Keep such logic in `lib/` as functions over plain values so a spec can `require` it directly (e.g. `require("lib.foo")`). Runtime-integrated behavior is out of scope for these tests.
 
-`spec/example_spec.lua` is a placeholder — replace it with real specs.
+`spec/example_spec.lua`, if present, is a placeholder — replace it with real specs.
 
 `spec/helper.lua` runs once before any spec loads — the place for setup that must precede the first `require` of the code under test (e.g. Factorio global stubs). Keep it idempotent.
 
