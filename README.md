@@ -31,7 +31,9 @@ This project serves as a scaffold for creating Factorio MODs.
    3. Replace `README.md` with the MOD title and template repository link
    4. Download and set up `LICENSE.txt` based on the specified license
    5. Write release settings (`MOD_LICENSE`, `MOD_CATEGORY`, `MOD_TAGS`) into `mise.toml`
-   6. Configure GitHub repository settings
+   6. Write the `.scaffold-sync.json` baseline for the scaffold-drift workflow
+   7. Remove `bin/initialize` itself, amend the initial commit, and force-push it; the script stops here if either fails, before any GitHub setting is changed
+   8. Configure GitHub repository settings
 
       - Auto-delete merged branches
       - Auto-merge for pull requests
@@ -42,9 +44,8 @@ This project serves as a scaffold for creating Factorio MODs.
       - Workflow permissions
       - `release` environment
       - `FACTORIO_API_KEY` secret
-      - `.scaffold-sync.json` baseline and the `CLAUDE_CODE_OAUTH_TOKEN` secret for the scaffold-drift workflow
-   7. Remove `bin/initialize` itself, amend the initial commit, and force-push it
-   8. Configure branch protection requiring pull requests
+      - `CLAUDE_CODE_OAUTH_TOKEN` secret for the scaffold-drift workflow
+   9. Configure branch protection requiring pull requests
 
    - `MOD_LICENSE` can be set to customize the license (defaults to `default_mit`); see [License identifier](https://wiki.factorio.com/Mod_details_API#License)
    - Example: `MOD_LICENSE=default_gnulgplv3 ./bin/initialize`
