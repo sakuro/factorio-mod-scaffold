@@ -94,6 +94,44 @@ print "Configuring release settings in mise.toml ..."
 # second [env] header, which is a duplicate-key error in TOML.
 mise set MOD_LICENSE="${MOD_LICENSE}" MOD_CATEGORY=no-category MOD_TAGS=
 
+# Record the scaffold commit this MOD is generated from, for scaffold-drift sync.
+# NOTE: this is the scaffold's live HEAD now, which matches the template snapshot
+# only if no scaffold commit landed between "Use this template" and this run.
+# Commits made in that window are baselined out -- the first scaffold-drift PR
+# will not carry their changes (a later scaffold edit to the same files still
+# syncs). The window is normally minutes; review the first chore/scaffold-drift
+# PR if the scaffold was active around then.
+SCAFFOLD_HEAD="$(git ls-remote https://github.com/sakuro/factorio-mod-scaffold HEAD | cut -f1)"
+if [[ -n "${SCAFFOLD_HEAD}" ]]; then
+  jq -n --arg repo "https://github.com/sakuro/factorio-mod-scaffold" \
+        --arg commit "${SCAFFOLD_HEAD}" \
+        --arg synced_at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+        '{repo: $repo, commit: $commit, synced_at: $synced_at}' > .scaffold-sync.json
+  print -- "- Wrote .scaffold-sync.json (baseline ${SCAFFOLD_HEAD})"
+else
+  print -- "- Could not resolve scaffold HEAD; create .scaffold-sync.json manually"
+fi
+
+# Commit and push before touching any GitHub setting: a failure here stops with
+# the repository still unprotected, so the commit and force push can be finished
+# by hand. Branch protection, set last, forbids the force push this needs.
+print "Committing and force-pushing the initialized MOD ..."
+git rm -q bin/initialize
+git add .
+
+name_with_owner="$(gh repo view --json nameWithOwner -q .nameWithOwner)"
+template_name_with_owner="$(gh api repos/:owner/:repo --jq '.template_repository.full_name')"
+# --no-verify: `mise install` above ran `hk install`, whose no-commit-to-branch hook
+# rejects any commit on main -- including this one, which creates main's history.
+if ! git commit --amend --no-verify -m ":tada: Initialized ${name_with_owner} from ${template_name_with_owner}"; then
+  print -u2 "Could not commit the initialized MOD; no GitHub setting was changed."
+  exit 1
+fi
+if ! git push --force; then
+  print -u2 "Could not force-push the initialized MOD; no GitHub setting was changed."
+  exit 1
+fi
+
 # Repository configuration
 print "Configuring GitHub repository settings..."
 # Enable auto-deletion of head branches after merge
@@ -184,24 +222,6 @@ else
   print -- "- Skipped FACTORIO_API_KEY (empty input, set it manually later)"
 fi
 
-# Record the scaffold commit this MOD is generated from, for scaffold-drift sync.
-# NOTE: this is the scaffold's live HEAD now, which matches the template snapshot
-# only if no scaffold commit landed between "Use this template" and this run.
-# Commits made in that window are baselined out -- the first scaffold-drift PR
-# will not carry their changes (a later scaffold edit to the same files still
-# syncs). The window is normally minutes; review the first chore/scaffold-drift
-# PR if the scaffold was active around then.
-SCAFFOLD_HEAD="$(git ls-remote https://github.com/sakuro/factorio-mod-scaffold HEAD | cut -f1)"
-if [[ -n "${SCAFFOLD_HEAD}" ]]; then
-  jq -n --arg repo "https://github.com/sakuro/factorio-mod-scaffold" \
-        --arg commit "${SCAFFOLD_HEAD}" \
-        --arg synced_at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-        '{repo: $repo, commit: $commit, synced_at: $synced_at}' > .scaffold-sync.json
-  print -- "- Wrote .scaffold-sync.json (baseline ${SCAFFOLD_HEAD})"
-else
-  print -- "- Could not resolve scaffold HEAD; create .scaffold-sync.json manually"
-fi
-
 # CLAUDE_CODE_OAUTH_TOKEN drives .github/workflows/scaffold-drift.yml. Repo-level
 # secret (the workflow reads secrets.CLAUDE_CODE_OAUTH_TOKEN at repo scope).
 # Leaving it blank is fine — the workflow's gate step then no-ops until the
@@ -222,23 +242,9 @@ else
   print -- "- Skipped CLAUDE_CODE_OAUTH_TOKEN (empty input, set it manually later)"
 fi
 
-# Finalize initialization
-print "Finalizing MOD initialization ..."
-git rm bin/initialize
-git add .
-
-name_with_owner="$(gh repo view --json nameWithOwner -q .nameWithOwner)"
-template_name_with_owner="$(gh api repos/:owner/:repo --jq '.template_repository.full_name')"
-git commit --amend -m ":tada: Initialized ${name_with_owner} from ${template_name_with_owner}"
-
-# Force-push the amended commit now, before branch protection is enabled
-# below. allow_force_pushes:false blocks force pushes for everyone,
-# including repository admins (enforce_admins:false only exempts admins
-# from required_status_checks/required_pull_request_reviews) -- pushing
-# after protection is set would lock this out.
-print "Force-pushing amended initial commit ..."
-git push --force
-
+# Last, because allow_force_pushes:false blocks force pushes for everyone,
+# including repository admins (enforce_admins:false only exempts admins from
+# required_status_checks/required_pull_request_reviews).
 # Require pull requests before merging to main (needed for auto-merge to work)
 DEFAULT_BRANCH="$(gh repo view --json defaultBranchRef -q .defaultBranchRef.name)"
 if gh api --method PUT "repos/:owner/:repo/branches/${DEFAULT_BRANCH}/protection" --input - <<'PROTECTION_JSON' >/dev/null; then
