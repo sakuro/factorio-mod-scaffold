@@ -128,9 +128,9 @@ jobs:
 
         gh pr create --title ":bookmark: Release v${{ github.event.inputs.version }}" --body "$PR_BODY"
 
-    # A PR opened by GITHUB_TOKEN does not trigger pull_request workflows, but
-    # workflow_dispatch is exempt. The check runs land on the branch head commit,
-    # so they count as the PR's required checks.
+    # A PR opened by GITHUB_TOKEN gets pull_request runs that wait for manual
+    # approval, but workflow_dispatch runs start immediately. The check runs
+    # land on the branch head commit, so they count as the PR's required checks.
     - name: Dispatch checks on the release PR
       env:
         GH_TOKEN: ${{ github.token }}

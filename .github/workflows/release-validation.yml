@@ -11,8 +11,8 @@ env:
 on:
   pull_request:
     branches: [main]
-  # release-preparation.yml opens the release PR with GITHUB_TOKEN, which does
-  # not trigger pull_request workflows, so it dispatches this run instead.
+  # release-preparation.yml opens the release PR with GITHUB_TOKEN, whose
+  # pull_request runs wait for manual approval, so it dispatches this run instead.
   workflow_dispatch:
 
 jobs:
@@ -30,6 +30,9 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       with:
+        # The release tag is moved to HEAD below. On pull_request the default
+        # ref is the synthetic merge commit, which never lands on main.
+        ref: ${{ github.head_ref || github.ref_name }}
         fetch-depth: 0
 
     - name: Extract version from branch name

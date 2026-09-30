@@ -98,9 +98,10 @@ jobs:
           # Bash(gh:*),… later if desired.
           claude_args: "--model claude-sonnet-5 --permission-mode acceptEdits --allowedTools 'Bash,Read,Write,Edit,Glob,Grep,TodoWrite,Skill'"
 
-      # A push by GITHUB_TOKEN does not trigger pull_request workflows, but
-      # workflow_dispatch is exempt. The check runs land on the branch head
-      # commit, so they count as the PR's required checks.
+      # A PR opened or pushed by GITHUB_TOKEN gets pull_request runs that wait
+      # for manual approval, but workflow_dispatch runs start immediately. The
+      # check runs land on the branch head commit, so they count as the PR's
+      # required checks.
       - name: Dispatch checks on the drift PR
         if: steps.gate.outputs.proceed == 'true' && steps.check.outputs.drift == 'true'
         env:
