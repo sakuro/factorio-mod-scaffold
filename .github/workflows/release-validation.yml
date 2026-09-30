@@ -11,15 +11,11 @@ env:
 on:
   pull_request:
     branches: [main]
-  # release-preparation.yml opens the release PR with GITHUB_TOKEN, whose
-  # pull_request runs wait for manual approval, so it dispatches this run instead.
-  workflow_dispatch:
 
 jobs:
   validate-release:
-    # Only run for release branches. head_ref is empty on workflow_dispatch;
-    # ref_name is then the dispatched branch.
-    if: startsWith(github.head_ref || github.ref_name, 'release-v')
+    # Only run for release branches
+    if: startsWith(github.head_ref, 'release-v')
     runs-on: ubuntu-latest
     permissions:
       contents: write      # Required for git tag push
@@ -32,13 +28,13 @@ jobs:
       with:
         # The release tag is moved to HEAD below. On pull_request the default
         # ref is the synthetic merge commit, which never lands on main.
-        ref: ${{ github.head_ref || github.ref_name }}
+        ref: ${{ github.head_ref }}
         fetch-depth: 0
 
     - name: Extract version from branch name
       id: version
       env:
-        BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+        BRANCH_NAME: ${{ github.head_ref }}
       run: |
         VERSION=${BRANCH_NAME#release-v}
         echo "version=$VERSION" >> "$GITHUB_OUTPUT"
