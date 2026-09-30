@@ -137,10 +137,10 @@ repo was last synced to.
 
 **Reviewing a `chore/scaffold-drift` PR**
 
-- The PR is opened with `GITHUB_TOKEN`, which does not trigger `pull_request`
-  workflows, so the drift workflow dispatches `lint.yml` (and `spec.yml`)
-  on the branch itself. To re-run them, use the Actions page or
-  `gh workflow run lint.yml --ref chore/scaffold-drift`.
+- The PR is opened with `GITHUB_TOKEN`, so its `pull_request` runs wait for
+  approval. The drift workflow dispatches `lint.yml` (and `spec.yml`) on the
+  branch instead; leave the pending runs unapproved. To re-run the checks, use
+  the Actions page or `gh workflow run lint.yml --ref chore/scaffold-drift`.
 - Require the `format-check` and `lint` checks (and `spec`, if this repo has the
   test lane) to pass.
 - Check that MOD-specific content survived: `mise.toml` `[env] MOD_*`, any doc

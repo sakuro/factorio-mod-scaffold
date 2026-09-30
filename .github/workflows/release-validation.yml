@@ -11,8 +11,8 @@ env:
 on:
   pull_request:
     branches: [main]
-  # release-preparation.yml opens the release PR with GITHUB_TOKEN, which does
-  # not trigger pull_request workflows, so it dispatches this run instead.
+  # release-preparation.yml opens the release PR with GITHUB_TOKEN, whose
+  # pull_request runs wait for manual approval, so it dispatches this run instead.
   workflow_dispatch:
 
 jobs:
