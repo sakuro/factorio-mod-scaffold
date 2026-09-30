@@ -30,6 +30,9 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       with:
+        # The release tag is moved to HEAD below. On pull_request the default
+        # ref is the synthetic merge commit, which never lands on main.
+        ref: ${{ github.head_ref || github.ref_name }}
         fetch-depth: 0
 
     - name: Extract version from branch name
