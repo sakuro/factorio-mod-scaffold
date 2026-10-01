@@ -1,15 +1,15 @@
 # Factorio MOD Scaffold
 
-This project serves as a scaffold for creating Factorio MODs.
+This project is a scaffold for creating Factorio MODs.
 
 ## Prerequisites
 
 - [zsh](https://www.zsh.org/)
 - [mise](https://mise.jdx.dev/)
-- A configured Git identity (`git config user.name` and `user.email`) — used for the initial commit's authorship and, when `MOD_LICENSE=default_mit`, embedded as the `LICENSE.txt` copyright holder
-- [gh CLI](https://cli.github.com/) authenticated (`gh auth login`) with admin access to the new repository — `./bin/initialize` changes repository settings, creates the `release` environment, and sets its secret
-- A Factorio Mod Portal API key with the [`ModPortal: Publish Mods`](https://wiki.factorio.com/Mod_publish_API), [`ModPortal: Upload Mods`](https://wiki.factorio.com/Mod_upload_API), and [`ModPortal: Edit Mods`](https://wiki.factorio.com/Mod_details_API) usages, created at https://factorio.com/profile — `./bin/initialize` will prompt for this to set the `FACTORIO_API_KEY` secret
-- Optionally, a Claude Code OAuth token from `claude setup-token` — `./bin/initialize` will prompt for it to set the `CLAUDE_CODE_OAUTH_TOKEN` secret that runs the weekly scaffold-drift workflow. It authenticates against your Claude subscription. Leave it blank to skip; the workflow no-ops until the secret is set.
+- A configured Git identity (`git config user.name` and `user.email`). It becomes the initial commit's author and, when `MOD_LICENSE=default_mit`, the `LICENSE.txt` copyright holder.
+- [gh CLI](https://cli.github.com/) authenticated (`gh auth login`) with admin access to the new repository, which `./bin/initialize` needs to change repository settings, create the `release` environment, and set its secret
+- A Factorio Mod Portal API key, created at https://factorio.com/profile, with the [`ModPortal: Publish Mods`](https://wiki.factorio.com/Mod_publish_API), [`ModPortal: Upload Mods`](https://wiki.factorio.com/Mod_upload_API), and [`ModPortal: Edit Mods`](https://wiki.factorio.com/Mod_details_API) usages. `./bin/initialize` prompts for it to set the `FACTORIO_API_KEY` secret.
+- Optionally, a Claude Code OAuth token from `claude setup-token`, which authenticates against your Claude subscription. `./bin/initialize` prompts for it to set the `CLAUDE_CODE_OAUTH_TOKEN` secret used by the weekly scaffold-drift workflow. Leave it blank to skip; the workflow no-ops until the secret is set.
 
 ## Usage
 
@@ -74,5 +74,5 @@ An initialized repository ends up with 14 labels: the 10 standard ones plus thes
 `.github/workflows/scaffold-drift.yml` runs weekly in each generated MOD and, via
 [Claude Code Action](https://github.com/anthropics/claude-code-action), opens a
 `chore/scaffold-drift` PR when this scaffold's shared infrastructure has moved
-ahead of the MOD. It is gated on the `CLAUDE_CODE_OAUTH_TOKEN` secret and does
-nothing on a fork. See `CONTRIBUTING.md` for how to review those PRs.
+ahead of the MOD. It runs only when the `CLAUDE_CODE_OAUTH_TOKEN` secret is set,
+so it does nothing on a fork. See `CONTRIBUTING.md` for how to review those PRs.
