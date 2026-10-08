@@ -55,10 +55,7 @@ This project is a scaffold for creating Factorio MODs.
 
 ## Issue labels
 
-GitHub provisions its standard label set (`bug`, `documentation`, `duplicate`,
-`enhancement`, `good first issue`, `help wanted`, `invalid`, `question`,
-`wontfix`, `accessibility`) on every new repository. `./bin/initialize` adds
-four project-specific labels:
+GitHub provisions its standard label set (`bug`, `documentation`, `duplicate`, `enhancement`, `good first issue`, `help wanted`, `invalid`, `question`, `wontfix`, `accessibility`) on every new repository. `./bin/initialize` adds four project-specific labels:
 
 | Label | Color | Description |
 | --- | --- | --- |
@@ -71,8 +68,4 @@ An initialized repository ends up with 14 labels: the 10 standard ones plus thes
 
 ## Scaffold drift
 
-`.github/workflows/scaffold-drift.yml` runs weekly in each generated MOD and, via
-[Claude Code Action](https://github.com/anthropics/claude-code-action), opens a
-`chore/scaffold-drift` PR when this scaffold's shared infrastructure has moved
-ahead of the MOD. It runs only when the `CLAUDE_CODE_OAUTH_TOKEN` secret is set,
-so it does nothing on a fork. See `CONTRIBUTING.md` for how to review those PRs.
+`.github/workflows/scaffold-drift.yml` runs weekly in each generated MOD and, via [Claude Code Action](https://github.com/anthropics/claude-code-action), opens a `chore/scaffold-drift` PR when this scaffold's shared infrastructure has moved ahead of the MOD. It runs only when the `CLAUDE_CODE_OAUTH_TOKEN` secret is set, so it does nothing on a fork. See `CONTRIBUTING.md` for how to review those PRs.
