@@ -165,7 +165,8 @@ repo was last synced to.
 
 Only with a `CLAUDE_CODE_OAUTH_TOKEN` repo secret set; blank means the workflow's
 gate step no-ops. A fork does not inherit the secret, so the workflow does
-nothing on a fork. GitHub disables a scheduled workflow in a public repository
+nothing on a fork. Scheduled workflows are also disabled by default in a
+fork (not in a repository generated from the template). GitHub disables a scheduled workflow in a public repository
 after 60 days without repository activity, so drift detection stops silently on
 a MOD that has gone quiet.
 
