@@ -7,7 +7,7 @@ This project is a scaffold for creating Factorio MODs.
 - [zsh](https://www.zsh.org/)
 - [mise](https://mise.jdx.dev/)
 - A configured Git identity (`git config user.name` and `user.email`). It becomes the initial commit's author and, when `MOD_LICENSE=default_mit`, the `LICENSE.txt` copyright holder.
-- [gh CLI](https://cli.github.com/) authenticated (`gh auth login`) with admin access to the new repository, which `./bin/initialize` needs to change repository settings, create the `release` environment, and set its secret
+- GitHub CLI authentication (`gh auth login`; `gh` itself is installed by mise) with admin access to the new repository, which `./bin/initialize` needs to change repository settings, create the `release` environment, and set its secret
 - A Factorio Mod Portal API key, created at https://factorio.com/profile, with the [`ModPortal: Publish Mods`](https://wiki.factorio.com/Mod_publish_API), [`ModPortal: Upload Mods`](https://wiki.factorio.com/Mod_upload_API), and [`ModPortal: Edit Mods`](https://wiki.factorio.com/Mod_details_API) usages. `./bin/initialize` prompts for it to set the `FACTORIO_API_KEY` secret.
 - Optionally, a Claude Code OAuth token from `claude setup-token`, which authenticates against your Claude subscription. `./bin/initialize` prompts for it to set the `CLAUDE_CODE_OAUTH_TOKEN` secret used by the weekly scaffold-drift workflow. Leave it blank to skip; the workflow no-ops until the secret is set.
 

@@ -13,6 +13,8 @@ MOD_TITLE=${(C)${${${MOD_NAME}//(#m)[^[:alnum:]]##/ }## }%% }
 # Install runtimes via mise
 print "Install tools via mise ..."
 mise install
+# Put the installed tools (gh, ...) on PATH for this script; the caller's shell may not have mise activated.
+eval "$(mise env -s zsh)"
 
 # Author name: GitHub repository owner (edit info.json afterward if needed)
 AUTHOR_NAME="$(gh api repos/:owner/:repo --jq '.owner.login')"
