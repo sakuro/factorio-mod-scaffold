@@ -49,7 +49,7 @@ Cover pure logic only: code that does not touch the Factorio runtime (`game`, `s
 
 ## Locale
 
-For a non-English locale, take item, entity, and term names from the game's own locale for that language (`data/base/locale/<lang>/base.cfg`, `data/core/locale/<lang>/core.cfg`) instead of translating them yourself.
+For a non-English locale, take item, entity, and term names from the game's own locale for that language instead of translating them yourself. They live in `data/<mod>/locale/<lang>/` of the Factorio installation, where `<mod>` is `base`, `core`, or one of the expansion mods (`space-age`, `quality`, `elevated-rails`, `recycler`); look in the one that defines the thing.
 
 ## Release
 
