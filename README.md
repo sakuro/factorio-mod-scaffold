@@ -4,6 +4,8 @@ This project is a scaffold for creating Factorio MODs.
 
 ## Prerequisites
 
+On Windows, use [WSL2](https://learn.microsoft.com/en-us/windows/wsl/); the scripts and tasks assume a Unix shell and are not expected to work natively. Clone the repository inside the WSL filesystem.
+
 - [zsh](https://www.zsh.org/)
 - [mise](https://mise.jdx.dev/)
 - A configured Git identity (`git config user.name` and `user.email`). It becomes the initial commit's author and, when `MOD_LICENSE=default_mit`, the `LICENSE.txt` copyright holder.
