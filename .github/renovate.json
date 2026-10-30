@@ -60,7 +60,7 @@
     },
     {
       "customType": "regex",
-      "managerFilePatterns": ["/^tasks/install-gh-actions-lock$/"],
+      "managerFilePatterns": ["/install-gh-actions-lock$/"],
       "matchStrings": [
         "gh extension install github/gh-actions-lock --pin (?<currentValue>v[0-9.]+)"
       ],
