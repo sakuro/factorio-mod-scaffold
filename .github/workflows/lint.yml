@@ -14,10 +14,10 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      uses: actions/checkout@v7.0.1
 
     - name: Setup mise
-      uses: jdx/mise-action@08ae2a091c038e1e05ec6f5115dc5c69d5a2a6b8 # v5
+      uses: jdx/mise-action@v5.1.2
 
     - name: Check Lua formatting
       run: mise run format-check
@@ -27,16 +27,33 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      uses: actions/checkout@v7.0.1
 
     - name: Install build dependencies for Lua
       run: sudo apt-get update && sudo apt-get install -y libreadline-dev
 
     - name: Setup mise
-      uses: jdx/mise-action@08ae2a091c038e1e05ec6f5115dc5c69d5a2a6b8 # v5
+      uses: jdx/mise-action@v5.1.2
 
     - name: Lint Lua code
       run: mise run lint
 
     - name: Check function doc comments
       run: mise run doc-check
+
+  verify-lockfile:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v7.0.1
+      with:
+        persist-credentials: false
+
+    - name: Install gh-actions-lock
+      run: gh extension install github/gh-actions-lock --pin v0.4.0
+
+    - name: Verify actions.lock
+      run: gh actions-lock --verify
