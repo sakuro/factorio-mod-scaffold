@@ -1,4 +1,4 @@
--- Placeholder so `mise run test` and CI pass on a freshly generated MOD.
+-- Placeholder so `mise run test` and CI pass on a freshly generated mod.
 -- Replace with real specs under spec/.
 describe("scaffold", function()
   it("has a working test lane", function()
