@@ -1,6 +1,6 @@
-# Factorio MOD Scaffold
+# Factorio Mod Scaffold
 
-This project is a scaffold for creating Factorio MODs.
+This project is a scaffold for creating Factorio mods.
 
 ## Prerequisites
 
@@ -27,8 +27,8 @@ This project is a scaffold for creating Factorio MODs.
    The script performs the following:
 
    1. Install tools via `mise install`
-   2. Generate MOD files (`info.json`, `locale/en/<MOD_NAME>.cfg`, `changelog.txt`)
-   3. Replace `README.md` with the MOD title and template repository link
+   2. Generate mod files (`info.json`, `locale/en/<MOD_NAME>.cfg`, `changelog.txt`)
+   3. Replace `README.md` with the mod title and template repository link
    4. Download and set up `LICENSE.txt` based on the specified license
    5. Write release settings (`MOD_LICENSE`, `MOD_CATEGORY`, `MOD_TAGS`) into `mise.toml`
    6. Write the `.scaffold-sync.json` baseline for the scaffold-drift workflow
@@ -39,7 +39,7 @@ This project is a scaffold for creating Factorio MODs.
       - Auto-merge for pull requests
       - GitHub Discussions
       - Repository topics (`factorio-mod`)
-      - Repository website (MOD portal page)
+      - Repository website (mod portal page)
       - Issue labels (project-specific additions; see [Issue labels](#issue-labels))
       - Workflow permissions
       - `release` environment
@@ -49,9 +49,9 @@ This project is a scaffold for creating Factorio MODs.
 
    - `MOD_LICENSE` can be set to customize the license (defaults to `default_mit`); see [License identifier](https://wiki.factorio.com/Mod_details_API#License)
    - Example: `MOD_LICENSE=default_gnulgplv3 ./bin/initialize`
-   - MOD name, title, and author are derived from the current directory name and the GitHub repository owner; edit `info.json` and `locale/en/<MOD_NAME>.cfg` afterward if they need to be different. MOD category and tags are written to `mise.toml` with their default values (`no-category` and empty, respectively) and can be edited there.
+   - Mod name, title, and author are derived from the current directory name and the GitHub repository owner; edit `info.json` and `locale/en/<MOD_NAME>.cfg` afterward if they need to be different. Mod category and tags are written to `mise.toml` with their default values (`no-category` and empty, respectively) and can be edited there.
 
-5. Your MOD scaffold will be ready
+5. Your mod scaffold will be ready
 
 ## Issue labels
 
@@ -68,4 +68,4 @@ An initialized repository ends up with 14 labels: the 10 standard ones plus thes
 
 ## Scaffold drift
 
-`.github/workflows/scaffold-drift.yml` runs weekly in each generated MOD and, via [Claude Code Action](https://github.com/anthropics/claude-code-action), opens a `chore/scaffold-drift` PR when this scaffold's shared infrastructure has moved ahead of the MOD. It runs only when the `CLAUDE_CODE_OAUTH_TOKEN` secret is set, so it does nothing on a fork. Scheduled workflows are disabled by default in a fork (not in a repository generated from the template). See `CONTRIBUTING.md` for how to review those PRs.
+`.github/workflows/scaffold-drift.yml` runs weekly in each generated mod and, via [Claude Code Action](https://github.com/anthropics/claude-code-action), opens a `chore/scaffold-drift` PR when this scaffold's shared infrastructure has moved ahead of the mod. It runs only when the `CLAUDE_CODE_OAUTH_TOKEN` secret is set, so it does nothing on a fork. Scheduled workflows are disabled by default in a fork (not in a repository generated from the template). See `CONTRIBUTING.md` for how to review those PRs.

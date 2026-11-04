@@ -5,7 +5,7 @@
 #
 # Exits 0 when the files are equal after dropping everything from the `@` of
 # each `uses: <action>@<ref> # <comment>` line, 1 otherwise. Such a change is a
-# SHA/tag pin bump that each derived MOD's Renovate applies on its own, and a
+# SHA/tag pin bump that each derived mod's Renovate applies on its own, and a
 # drift run with GITHUB_TOKEN could not push it anyway (no `workflows`
 # permission), so scaffold-drift.yml and merge.sh both leave it alone.
 
