@@ -212,6 +212,18 @@ if gh api --method PUT repos/:owner/:repo/actions/permissions/workflow \
 else
   print -- "- Could not configure workflow permissions (may need to be set manually)"
 fi
+# Keep the "require actions pinned to a full-length commit SHA" policy off:
+# workflows reference actions by tag and .github/workflows/actions.lock pins
+# them, and with the policy on gh actions-lock leaves SHA pins in place.
+# The endpoint requires `enabled`; allowed_actions=all restates the default.
+if gh api --silent --method PUT repos/:owner/:repo/actions/permissions \
+  -F enabled=true \
+  -f allowed_actions=all \
+  -F sha_pinning_required=false 2>/dev/null; then
+  print -- "- SHA pinning requirement for actions turned off (actions.lock pins them)"
+else
+  print -- "- Could not turn off the SHA pinning requirement (may need to be set manually)"
+fi
 # Create release environment
 if gh api --silent --method PUT repos/:owner/:repo/environments/release; then
   print -- "- Created 'release' environment"
