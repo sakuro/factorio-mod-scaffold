@@ -18,7 +18,7 @@ jobs:
       run: sudo apt-get update && sudo apt-get install -y libreadline-dev
 
     - name: Setup mise
-      uses: jdx/mise-action@v5.1.2
+      uses: jdx/mise-action@v5.2.8
 
     - name: Run tests
       run: mise run test
