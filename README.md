@@ -44,6 +44,7 @@ On Windows, use [WSL2](https://learn.microsoft.com/en-us/windows/wsl/); the scri
       - Repository website (mod portal page)
       - Issue labels (project-specific additions; see [Issue labels](#issue-labels))
       - Workflow permissions
+      - SHA pinning requirement for actions turned off (`actions.lock` pins them)
       - `release` environment
       - `FACTORIO_API_KEY` secret
       - `CLAUDE_CODE_OAUTH_TOKEN` secret for the scaffold-drift workflow
